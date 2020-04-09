@@ -58,6 +58,7 @@ public class DatabaseServlet extends HttpServlet{
           statement.setString(1, name);
           statement.setInt(2, age);
           statement.executeUpdate();
+          return true;
         }catch(URISyntaxException uriSyntaxException){
           uriSyntaxException.printStackTrace();
         }
@@ -100,15 +101,15 @@ public class DatabaseServlet extends HttpServlet{
             age =new Integer(rawAge);
             if(age<1){
                 error+= "<li>Age must be an integer greater than 0.</li>";
+                rawAge = "";
             }else{
               if(age>1000){
                   error+= "<li>Age must be an integer less than 1000.</li>";
+                  rawAge = "";
               }
             }
           }catch (Exception e) {
             error+= "<li>Age must be an integer greater than 0.</li>";
-          }finally{
-            rawAge = "";
           }
      }
 
@@ -118,9 +119,10 @@ public class DatabaseServlet extends HttpServlet{
      if (error.length() == 0){
        EntriesManager entriesManager = new EntriesManager();
 
-       entriesManager.save(name,age);
+       boolean ok = entriesManager.save(name,age);
 
        PrintHead(out);
+       out.println("<body>"+(ok? "Success":"Fail")+"</body>");
        //PrintEntriesBody(out, resourcePath);
        PrintTail(out);
      }else{
