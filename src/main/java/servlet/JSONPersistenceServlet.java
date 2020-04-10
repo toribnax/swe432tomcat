@@ -1,5 +1,10 @@
 package servlet;
 
+import java.util.List;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -16,15 +21,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.WebServlet;
 
-@WebServlet(name = "FilePersistence", urlPatterns = {"/file"})
-public class FilePersistenceServlet extends HttpServlet{
+@WebServlet(name = "JSONPersistence", urlPatterns = {"/json"})
+public class JSONPersistenceServlet extends HttpServlet{
   static enum Data {AGE, NAME};
-  static String RESOURCE_FILE = "entries.txt";
+  static String RESOURCE_FILE = "entries.json";
   static final String VALUE_SEPARATOR = ";";
 
   static String Domain  = "";
   static String Path    = "/";
-  static String Servlet = "file";
+  static String Servlet = "json";
 
   // Button labels
   static String OperationAdd = "Add";
@@ -32,6 +37,73 @@ public class FilePersistenceServlet extends HttpServlet{
   // Other strings.
   static String Style =
     "https://www.cs.gmu.edu/~offutt/classes/432/432-style.css";
+
+  public class Entry {
+    String name;
+    Integer age;
+  }
+
+  public class Entries{
+    List<Entry> entries;
+  }
+
+  public class EntryManager{
+    private String filePath = null;
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+    public boolean save(String name, Integer age){
+      try{
+        Entries entries = getAll();
+        Entry newEntry = new Entry();
+        newEntry.name = name;
+        newEntry.age = age;
+        entries.entries.add(newEntry);
+        FileWriter fileWriter = new FileWriter(filePath);
+        new Gson().toJson(entries, fileWriter);
+        fileWriter.flush();
+        fileWriter.close();
+      }catch(IOException ioException){
+        ioException.printStackTrace();
+        return false;
+      }
+
+      return true;
+    }
+
+    private Entries getAll(){
+      Entries entries =  entries = new Entries();
+      entries.entries = new ArrayList();
+
+      try{
+        File file = new File(filePath);
+        if(!file.exists()){
+          return entries;
+        }
+
+        BufferedReader bufferedReader =
+          new BufferedReader(new FileReader(file));
+        Entries readEntries =
+          new Gson().fromJson(bufferedReader, Entries.class);
+          
+        if(readEntries != null && readEntries.entries != null){
+          entries = readEntries;
+        }
+        bufferedReader.close();
+
+      }catch(IOException ioException){
+        ioException.printStackTrace();
+      }
+
+      return entries;
+    }
+
+    public String getAllAsHTMLTable(){
+      return "";
+    }
+
+  }
 
   /** *****************************************************
    *  Overrides HttpServlet's doPost().
@@ -44,7 +116,8 @@ public class FilePersistenceServlet extends HttpServlet{
      throws ServletException, IOException
   {
      String name = request.getParameter(Data.NAME.name());
-     String age = request.getParameter(Data.AGE.name());
+     String rawAge = request.getParameter(Data.AGE.name());
+     Integer age = null;
 
      String error = "";
      if(name == null){
@@ -52,24 +125,24 @@ public class FilePersistenceServlet extends HttpServlet{
        name = "";
      }
 
-     if(age == null){
+     if(rawAge == null){
        error+= "<li>Age is required.<li>";
-       age = "";
+       rawAge = "";
      }else{
           try{
-            Integer ageInteger =new Integer(age);
-            if(ageInteger<1){
+            age=new Integer(rawAge);
+            if(age<1){
                 error+= "<li>Age must be an integer greater than 0.</li>";
-                age = "";
+                rawAge = "";
             }else{
-              if(ageInteger>150){
+              if(age>150){
                   error+= "<li>Age must be an integer less than 150.</li>";
-                  age = "";
+                  rawAge = "";
               }
             }
           }catch (Exception e) {
             error+= "<li>Age must be an integer greater than 0.</li>";
-            age = "";
+            rawAge = "";
           }
      }
 
@@ -77,18 +150,18 @@ public class FilePersistenceServlet extends HttpServlet{
      PrintWriter out = response.getWriter();
 
      if (error.length() == 0){
-       PrintWriter entriesPrintWriter = new PrintWriter(
-          new FileWriter(RESOURCE_FILE, true), true
-       );
-       entriesPrintWriter.println(name+VALUE_SEPARATOR+age);
-       entriesPrintWriter.close();
+       EntryManager entryManager = new EntryManager();
+       entryManager.setFilePath(RESOURCE_FILE);
+       entryManager.save(name, age);
+
+
 
        PrintHead(out);
        PrintEntriesBody(out, RESOURCE_FILE);
        PrintTail(out);
      }else{
        PrintHead(out);
-       PrintBody(out, name, age, error);
+       PrintBody(out, name, rawAge, error);
        PrintTail(out);
      }
 
@@ -193,10 +266,10 @@ public class FilePersistenceServlet extends HttpServlet{
           return;
         }
 
-        BufferedReader bufferedReader =
+        BufferedReader BufferedReader =
           new BufferedReader(new FileReader(file));
         String line;
-        while ((line = bufferedReader.readLine()) != null) {
+        while ((line = BufferedReader.readLine()) != null) {
           String []  entry= line.split(VALUE_SEPARATOR);
           out.println("  <tr>");
           for(String value: entry){
@@ -204,7 +277,6 @@ public class FilePersistenceServlet extends HttpServlet{
           }
           out.println("  </tr>");
         }
-        bufferedReader.close();
       } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {

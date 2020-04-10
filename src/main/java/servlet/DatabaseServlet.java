@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.net.URISyntaxException;
 
@@ -21,11 +23,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
 import javax.servlet.annotation.WebServlet;
-@WebServlet(name = "DBPersistence", urlPatterns = {"/database"})
 
+@WebServlet(name = "DBPersistence", urlPatterns = {"/database"})
 public class DatabaseServlet extends HttpServlet{
   static enum Data {AGE, NAME};
 
@@ -37,7 +37,8 @@ public class DatabaseServlet extends HttpServlet{
   static String OperationAdd = "Add";
 
   // Other strings.
-  static String Style ="https://www.cs.gmu.edu/~offutt/classes/432/432-style.css";
+  static String Style =
+  "https://www.cs.gmu.edu/~offutt/classes/432/432-style.css";
 
   private static Connection connection = null;
 
@@ -64,12 +65,55 @@ public class DatabaseServlet extends HttpServlet{
         }
         catch (Exception exception) {
           exception.printStackTrace();
+        }finally {
+          if (statement != null) {
+            try{
+              statement.close();
+            }catch(SQLException sqlException){
+              sqlException.printStackTrace();
+            }
+          }
         }
 
         return false;
       }
-      public String [] getAll(){
-        return null;
+      public String getAllAsHTMLTable(){
+        Statement statement = null;
+        ResultSet entries = null;
+        StringBuilder htmlOut = new StringBuilder();
+        try {
+          connection = connection == null ? getConnection() : connection;
+          statement = connection.createStatement();
+          entries = statement.executeQuery(
+          "SELECT "+Data.NAME.name()+", "+Data.AGE.name()+" FROM entries");
+
+          while (entries.next()) {
+              htmlOut.append("<tr><td>");
+              htmlOut.append(entries.getString(1)); //name
+              htmlOut.append("</td><td>");
+              htmlOut.append(entries.getInt(2)); //age
+              htmlOut.append("</td></tr>");
+          }
+          if(htmlOut.length() == 0){
+            htmlOut.append("<tr><td> no entries</td></tr>");
+          }
+        }catch(URISyntaxException uriSyntaxException){
+          uriSyntaxException.printStackTrace();
+        }
+        catch (Exception exception) {
+          exception.printStackTrace();
+        }finally {
+          if (statement != null) {
+            try{
+              statement.close();
+            }catch(SQLException sqlException){
+              sqlException.printStackTrace();
+            }
+          }
+        }
+
+        return "<table><tr><th>Name</th><th>Age</th></tr>"
+          + htmlOut.toString()+"</table>";
       }
     }
 
@@ -103,8 +147,8 @@ public class DatabaseServlet extends HttpServlet{
                 error+= "<li>Age must be an integer greater than 0.</li>";
                 rawAge = "";
             }else{
-              if(age>1000){
-                  error+= "<li>Age must be an integer less than 1000.</li>";
+              if(age>150){
+                  error+= "<li>Age must be an integer less than 150.</li>";
                   rawAge = "";
               }
             }
@@ -120,10 +164,11 @@ public class DatabaseServlet extends HttpServlet{
        EntriesManager entriesManager = new EntriesManager();
 
        boolean ok = entriesManager.save(name,age);
-
+       String saveStatusHTML =
+       "<p>"+(ok? "Entry added.":"Entry was not added.")+"</p>";
        PrintHead(out);
-       out.println("<body>"+(ok? "Success":"Fail")+"</body>");
-       //PrintEntriesBody(out, resourcePath);
+       PrintEntriesBody(
+        out, saveStatusHTML, entriesManager.getAllAsHTMLTable());
        PrintTail(out);
      }else{
        PrintHead(out);
@@ -158,7 +203,7 @@ public class DatabaseServlet extends HttpServlet{
      out.println("");
 
      out.println("<head>");
-     out.println("<title>File Persistence Example</title>");
+     out.println("<title>DB Persistence Example</title>");
      out.println(" <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Style + "\">");
      out.println("</head>");
      out.println("");
@@ -206,48 +251,17 @@ public class DatabaseServlet extends HttpServlet{
   /** *****************************************************
    *  Prints the <BODY> of the HTML page
   ********************************************************* */
-  private void PrintEntriesBody (PrintWriter out, String resourcePath)
-  {
-     out.println("<body>");
-     out.println("<p>");
-     out.println("A simple example that shows entries persisted on a file");
-     out.println("</p>");
-     out.println("");
-     out.println(" <table>");
-
-      try {
-
-          out.println("  <tr>");
-          out.println("   <td>Name");
-          out.println("   <td>Age");
-          out.println("  </tr>");
-          File file = new File(resourcePath);
-          if(!file.exists()){
-            out.println("  <tr>");
-            out.println("   <td>No entries persisted yet.");
-            out.println("   <td>");
-            out.println("  </tr>");
-            return;
-          }
-
-          BufferedReader BufferedReader = new BufferedReader(new FileReader(file));
-          String line ;
-          while ((line = BufferedReader.readLine()) != null) {
-            String []  entry= line.split(" ");
-            out.println("  <tr>");
-            for(String value: entry){
-                out.println("   <td>"+value);
-            }
-            out.println("  </tr>");
-          }
-        } catch (FileNotFoundException ex) {
-              ex.printStackTrace();
-          } catch (IOException ex) {
-              ex.printStackTrace();
-          }
-     out.println(" </table>");
-     out.println("");
-     out.println("</body>");
+  private void PrintEntriesBody (PrintWriter out, String status, String results){
+    out.println("<body>");
+    out.println("<p>");
+    out.println("A simple example that shows entries persisted on a DB");
+    out.println("</p>");
+    out.println("");
+    out.println(status);
+    out.println("");
+    out.println(results);
+    out.println("");
+    out.println("</body>");
   } // End PrintBody
 
 

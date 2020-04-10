@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.io.PrintWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
@@ -16,15 +16,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.WebServlet;
 
-@WebServlet(name = "FilePersistence", urlPatterns = {"/file"})
-public class FilePersistenceServlet extends HttpServlet{
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.StartDocument;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
+
+@WebServlet(name = "XMLPersistence", urlPatterns = {"/xml"})
+public class XMLPersistenceServlet extends HttpServlet{
   static enum Data {AGE, NAME};
-  static String RESOURCE_FILE = "entries.txt";
+  static String RESOURCE_FILE = "entries.xml";
   static final String VALUE_SEPARATOR = ";";
 
   static String Domain  = "";
   static String Path    = "/";
-  static String Servlet = "file";
+  static String Servlet = "xml";
 
   // Button labels
   static String OperationAdd = "Add";
@@ -32,6 +42,69 @@ public class FilePersistenceServlet extends HttpServlet{
   // Other strings.
   static String Style =
     "https://www.cs.gmu.edu/~offutt/classes/432/432-style.css";
+
+    public class XMLWriter {
+      private String filePath = null;
+      public void setFilePath(String filePath) {
+          this.filePath = filePath;
+      }
+
+      public void save(String name, Integer age) throws Exception {
+          XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+          XMLEventWriter eventWriter = outputFactory
+                  .createXMLEventWriter(new FileOutputStream(filePath));
+          XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+          XMLEvent end = eventFactory.createDTD("\n");
+          StartDocument startDocument = eventFactory.createStartDocument();
+          eventWriter.add(startDocument);
+          eventWriter.add(end);
+          StartElement configStartElement = eventFactory.createStartElement("",
+                  "", "entries");
+          eventWriter.add(configStartElement);
+          eventWriter.add(end);
+          addEntry(eventWriter, name, age);
+          eventWriter.add(eventFactory.createEndElement("", "", "entries"));
+          eventWriter.add(end);
+          eventWriter.add(eventFactory.createEndDocument());
+          eventWriter.close();
+      }
+
+      private void addEntry(XMLEventWriter eventWriter, String name,
+              Integer age) throws XMLStreamException {
+          XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+                XMLEvent end = eventFactory.createDTD("\n");
+                XMLEvent tab = eventFactory.createDTD("\t");
+          StartElement entryStartElement = eventFactory.createStartElement("",
+                        "", "entry");
+          eventWriter.add(entryStartElement);
+          eventWriter.add(end);
+          createNode(eventWriter, "name", name);
+          createNode(eventWriter, "age", String.valueOf(age));
+          eventWriter.add(eventFactory.createEndElement("", "", "entry"));
+          eventWriter.add(end);
+
+      }
+      private void createNode(XMLEventWriter eventWriter, String name,
+            String value) throws XMLStreamException {
+
+        XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+        XMLEvent end = eventFactory.createDTD("\n");
+        XMLEvent tab = eventFactory.createDTD("\t");
+        // create Start node
+        StartElement sElement = eventFactory.createStartElement("", "", name);
+        eventWriter.add(tab);
+        eventWriter.add(sElement);
+        // create Content
+        Characters characters = eventFactory.createCharacters(value);
+        eventWriter.add(characters);
+        // create End node
+        EndElement eElement = eventFactory.createEndElement("", "", name);
+        eventWriter.add(eElement);
+        eventWriter.add(end);
+
+    }
+
+  }
 
   /** *****************************************************
    *  Overrides HttpServlet's doPost().
@@ -44,7 +117,8 @@ public class FilePersistenceServlet extends HttpServlet{
      throws ServletException, IOException
   {
      String name = request.getParameter(Data.NAME.name());
-     String age = request.getParameter(Data.AGE.name());
+     String rawAge = request.getParameter(Data.AGE.name());
+     Integer age = null;
 
      String error = "";
      if(name == null){
@@ -52,24 +126,24 @@ public class FilePersistenceServlet extends HttpServlet{
        name = "";
      }
 
-     if(age == null){
+     if(rawAge == null){
        error+= "<li>Age is required.<li>";
-       age = "";
+       rawAge = "";
      }else{
           try{
-            Integer ageInteger =new Integer(age);
-            if(ageInteger<1){
+            age =new Integer(rawAge);
+            if(age<1){
                 error+= "<li>Age must be an integer greater than 0.</li>";
-                age = "";
+                rawAge = "";
             }else{
-              if(ageInteger>150){
+              if(age>150){
                   error+= "<li>Age must be an integer less than 150.</li>";
-                  age = "";
+                  rawAge = "";
               }
             }
           }catch (Exception e) {
             error+= "<li>Age must be an integer greater than 0.</li>";
-            age = "";
+            rawAge = "";
           }
      }
 
@@ -77,18 +151,25 @@ public class FilePersistenceServlet extends HttpServlet{
      PrintWriter out = response.getWriter();
 
      if (error.length() == 0){
-       PrintWriter entriesPrintWriter = new PrintWriter(
-          new FileWriter(RESOURCE_FILE, true), true
-       );
-       entriesPrintWriter.println(name+VALUE_SEPARATOR+age);
-       entriesPrintWriter.close();
+       // PrintWriter entriesPrintWriter = new PrintWriter(
+       //    new FileWriter(RESOURCE_FILE, true), true
+       // );
+
+       XMLWriter entriesXMLWriter = new XMLWriter();
+        entriesXMLWriter.setFilePath(RESOURCE_FILE);
+        try {
+            entriesXMLWriter.save(name, age);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
        PrintHead(out);
        PrintEntriesBody(out, RESOURCE_FILE);
        PrintTail(out);
      }else{
        PrintHead(out);
-       PrintBody(out, name, age, error);
+       PrintBody(out, name, rawAge, error);
        PrintTail(out);
      }
 
@@ -193,10 +274,10 @@ public class FilePersistenceServlet extends HttpServlet{
           return;
         }
 
-        BufferedReader bufferedReader =
+        BufferedReader BufferedReader =
           new BufferedReader(new FileReader(file));
         String line;
-        while ((line = bufferedReader.readLine()) != null) {
+        while ((line = BufferedReader.readLine()) != null) {
           String []  entry= line.split(VALUE_SEPARATOR);
           out.println("  <tr>");
           for(String value: entry){
@@ -204,7 +285,6 @@ public class FilePersistenceServlet extends HttpServlet{
           }
           out.println("  </tr>");
         }
-        bufferedReader.close();
       } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
