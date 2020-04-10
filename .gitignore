@@ -6,3 +6,4 @@ Procfile
 # IntelliJ Idea project files
 .idea
 *.iml
+entries.*
