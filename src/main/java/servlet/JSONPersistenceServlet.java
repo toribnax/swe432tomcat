@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
@@ -25,7 +24,6 @@ import javax.servlet.annotation.WebServlet;
 public class JSONPersistenceServlet extends HttpServlet{
   static enum Data {AGE, NAME};
   static String RESOURCE_FILE = "entries.json";
-  static final String VALUE_SEPARATOR = ";";
 
   static String Domain  = "";
   static String Path    = "/";
@@ -65,7 +63,6 @@ public class JSONPersistenceServlet extends HttpServlet{
         fileWriter.flush();
         fileWriter.close();
       }catch(IOException ioException){
-        ioException.printStackTrace();
         return null;
       }
 
@@ -93,7 +90,6 @@ public class JSONPersistenceServlet extends HttpServlet{
         bufferedReader.close();
 
       }catch(IOException ioException){
-        ioException.printStackTrace();
       }
 
       return entries;
