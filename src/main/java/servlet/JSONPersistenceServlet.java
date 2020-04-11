@@ -53,23 +53,23 @@ public class JSONPersistenceServlet extends HttpServlet{
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
-    public boolean save(String name, Integer age){
+    public Entries save(String name, Integer age){
+      Entries entries = getAll();
+      Entry newEntry = new Entry();
+      newEntry.name = name;
+      newEntry.age = age;
+      entries.entries.add(newEntry);
       try{
-        Entries entries = getAll();
-        Entry newEntry = new Entry();
-        newEntry.name = name;
-        newEntry.age = age;
-        entries.entries.add(newEntry);
         FileWriter fileWriter = new FileWriter(filePath);
         new Gson().toJson(entries, fileWriter);
         fileWriter.flush();
         fileWriter.close();
       }catch(IOException ioException){
         ioException.printStackTrace();
-        return false;
+        return null;
       }
 
-      return true;
+      return entries;
     }
 
     private Entries getAll(){
@@ -99,8 +99,18 @@ public class JSONPersistenceServlet extends HttpServlet{
       return entries;
     }
 
-    public String getAllAsHTMLTable(){
-      return "";
+    public String getAllAsHTMLTable(Entries entries){
+      StringBuilder htmlOut = new StringBuilder("<table>");
+      htmlOut.append("<tr><th>Name</th><th>Age</th></tr>");
+      if(entries == null || entries.entries == null || entries.entries.size() == 0){
+        htmlOut.append("<tr><td>No entries yet.</td></tr>");
+      }else{
+        for(Entry entry: entries.entries){
+           htmlOut.append("<tr><td>"+entry.name+"</td><td>"+entry.age+"</td></tr>");
+        }
+      }
+      htmlOut.append("</table>");
+      return htmlOut.toString();
     }
 
   }
@@ -152,12 +162,15 @@ public class JSONPersistenceServlet extends HttpServlet{
      if (error.length() == 0){
        EntryManager entryManager = new EntryManager();
        entryManager.setFilePath(RESOURCE_FILE);
-       entryManager.save(name, age);
-
-
-
+       Entries newEntries=entryManager.save(name, age);
+       if(newEntries ==  null){
+         error+= "<li>Could not save entry.</li>";
+         PrintHead(out);
+         PrintBody(out, name, rawAge, error);
+         PrintTail(out);
+       }
        PrintHead(out);
-       PrintEntriesBody(out, RESOURCE_FILE);
+       PrintEntriesBody(out, entryManager.getAllAsHTMLTable(entries));
        PrintTail(out);
      }else{
        PrintHead(out);
@@ -189,7 +202,7 @@ public class JSONPersistenceServlet extends HttpServlet{
      out.println("<html>");
      out.println("");
      out.println("<head>");
-     out.println("<title>File Persistence Example</title>");
+     out.println("<title>JSON Persistence Example</title>");
      out.println(
      " <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Style + "\">");
      out.println("</head>");
@@ -244,47 +257,15 @@ public class JSONPersistenceServlet extends HttpServlet{
   /** *****************************************************
    *  Prints the <BODY> of the HTML page
   ********************************************************* */
-  private void PrintEntriesBody (PrintWriter out, String resourcePath){
+  private void PrintEntriesBody (PrintWriter out, String tableString){
     out.println("<body>");
     out.println("<p>");
-    out.println("A simple example that shows entries persisted on a file");
+    out.println("A simple example that shows entries persisted on a JSON file");
     out.println("</p>");
     out.println("");
-    out.println(" <table>");
-
-    try {
-
-        out.println("  <tr>");
-        out.println("   <th>Name</th>");
-        out.println("   <th>Age</th>");
-        out.println("  </tr>");
-        File file = new File(resourcePath);
-        if(!file.exists()){
-          out.println("  <tr>");
-          out.println("   <td>No entries persisted yet.</td>");
-          out.println("  </tr>");
-          return;
-        }
-
-        BufferedReader BufferedReader =
-          new BufferedReader(new FileReader(file));
-        String line;
-        while ((line = BufferedReader.readLine()) != null) {
-          String []  entry= line.split(VALUE_SEPARATOR);
-          out.println("  <tr>");
-          for(String value: entry){
-              out.println("   <td>"+value+"</td>");
-          }
-          out.println("  </tr>");
-        }
-      } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-     out.println(" </table>");
-     out.println("");
-     out.println("</body>");
+    out.println(tableString)
+    out.println("");
+    out.println("</body>");
   }
 
   /** *****************************************************
