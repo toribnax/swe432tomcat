@@ -263,7 +263,7 @@ public class JSONPersistenceServlet extends HttpServlet{
     out.println("A simple example that shows entries persisted on a JSON file");
     out.println("</p>");
     out.println("");
-    out.println(tableString)
+    out.println(tableString);
     out.println("");
     out.println("</body>");
   }
