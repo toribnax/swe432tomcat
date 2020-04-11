@@ -170,7 +170,7 @@ public class JSONPersistenceServlet extends HttpServlet{
          PrintTail(out);
        }
        PrintHead(out);
-       PrintEntriesBody(out, entryManager.getAllAsHTMLTable(entries));
+       PrintEntriesBody(out, entryManager.getAllAsHTMLTable(newEntries));
        PrintTail(out);
      }else{
        PrintHead(out);
