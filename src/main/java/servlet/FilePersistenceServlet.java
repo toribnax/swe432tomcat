@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.WebServlet;
 
 @WebServlet(name = "FilePersistence", urlPatterns = {"/file"})
-public class FilePersistenceServlet extends HttpServlet{
+public class persistenceFile extends HttpServlet{
   static enum Data {AGE, NAME};
   static String RESOURCE_FILE = "entries.txt";
   static final String VALUE_SEPARATOR = ";";
@@ -30,8 +30,6 @@ public class FilePersistenceServlet extends HttpServlet{
   static String OperationAdd = "Add";
 
   // Other strings.
-  static String Style =
-    "https://www.cs.gmu.edu/~offutt/classes/432/432-style.css";
 
   /** *****************************************************
    *  Overrides HttpServlet's doPost().
@@ -77,22 +75,18 @@ public class FilePersistenceServlet extends HttpServlet{
      PrintWriter out = response.getWriter();
 
      if (error.length() == 0){
-       PrintWriter entriesPrintWriter = new PrintWriter(
-          new FileWriter(RESOURCE_FILE, true), true
-       );
+       PrintWriter entriesPrintWriter = new PrintWriter(new FileWriter(RESOURCE_FILE, true), true);
        entriesPrintWriter.println(name+VALUE_SEPARATOR+age);
        entriesPrintWriter.close();
 
        PrintHead(out);
-       PrintEntriesBody(out, RESOURCE_FILE);
+       PrintResponseBody(out, RESOURCE_FILE);
        PrintTail(out);
      }else{
        PrintHead(out);
        PrintBody(out, name, age, error);
        PrintTail(out);
      }
-
-
   }
 
   /** *****************************************************
@@ -117,8 +111,12 @@ public class FilePersistenceServlet extends HttpServlet{
      out.println("");
      out.println("<head>");
      out.println("<title>File Persistence Example</title>");
-     out.println(
-     " <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Style + "\">");
+     // Put the focus in the name field
+     out.println ("<script>");
+     out.println ("  function setFocus(){");
+     out.println ("    document.persist2file.NAME.focus();");
+     out.println ("  }");
+     out.println ("</script>");
      out.println("</head>");
      out.println("");
   }
@@ -126,23 +124,20 @@ public class FilePersistenceServlet extends HttpServlet{
   /** *****************************************************
    *  Prints the <BODY> of the HTML page
   ********************************************************* */
-  private void PrintBody (
-    PrintWriter out, String name, String age, String error){
-     out.println("<body>");
+  private void PrintBody (PrintWriter out, String name, String age, String error){
+     out.println("<body onLoad=\"setFocus()\">");
      out.println("<p>");
-     out.println(
-     "A simple example that demonstrates how to keep data in a file");
+     out.println("A simple example that demonstrates how to persist data to a file");
      out.println("</p>");
 
      if(error != null && error.length() > 0){
-       out.println(
-       "<p style=\"color:red;\"> We encounter the following issues:</p>");
+       out.println("<p style=\"color:red;\">Please correct the following and resubmit.</p>");
        out.println("<ol>");
        out.println(error);
        out.println("</ol>");
      }
 
-     out.print  ("<form method=\"post\"");
+     out.print  ("<form name=\"persist2file\" method=\"post\"");
      out.println(" action=\""+Domain+Path+Servlet+"\">");
      out.println("");
      out.println(" <table>");
@@ -171,16 +166,15 @@ public class FilePersistenceServlet extends HttpServlet{
   /** *****************************************************
    *  Prints the <BODY> of the HTML page
   ********************************************************* */
-  private void PrintEntriesBody (PrintWriter out, String resourcePath){
-    out.println("<body>");
+  private void PrintResponseBody (PrintWriter out, String resourcePath){
+    out.println("<body onLoad=\"setFocus()\">");
     out.println("<p>");
-    out.println("A simple example that shows entries persisted on a file");
+    out.println("A simple example that demonstrates how to persist data to a file");
     out.println("</p>");
     out.println("");
     out.println(" <table>");
 
     try {
-
         out.println("  <tr>");
         out.println("   <th>Name</th>");
         out.println("   <th>Age</th>");
@@ -193,8 +187,7 @@ public class FilePersistenceServlet extends HttpServlet{
           return;
         }
 
-        BufferedReader bufferedReader =
-          new BufferedReader(new FileReader(file));
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
         String line;
         while ((line = bufferedReader.readLine()) != null) {
           String []  entry= line.split(VALUE_SEPARATOR);
