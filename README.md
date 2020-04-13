@@ -182,12 +182,75 @@ After you are satisfied changing your code, remember they are still in your mach
 ## Sharing your repo with the TA
 Your repo must be private at all times and for me to grade your code, please add me as a contributor. My username is luminaxster.
 
+# Add persistence to your Heroku app
+Go to your Heroku dashboard, choose your Tomcat servlet app, go to the Resources tab, click on find add-ons, type  postgres, Heroku-Postrgres will show up, select it with Hobby dev (free) tier.
+
+**Or**, in your terminal:
+```
+heroku addons:create heroku-postgresql:hobby-dev --app <your_heroku_app_name>
+```
+**Remember:** <your_heroku_app_name> is the name of your heroku app.
+
+## Install PostgreSQL
+You can get Postgres [here](https://postgresapp.com/downloads.html) and choose your platform binaries.
+
+*Windows:* Using the wizard will install the DB, services and basic tools we need to manage and query the database.
+
+*Mac:* Select Postgres.app with PostgreSQL 12. Then execute this command in your terminal:
+```
+sudo mkdir -p /etc/paths.d && echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
+```
+Reopen the terminal and try:
+```which psql```
+
+It should return a file system path like ```/Applications/Postgres.app/Contents/Versions/latest/bin/psql```.
+
+### Configure the connection to your remote DB add-ons in Heroku
+In order for your Java applications to access the DB via JDBC, you need to setup the connection. In your terminal, execute:
+```
+export JDBC_DATABASE_URL=`heroku run echo \\$JDBC_DATABASE_URL -a <your_heroku_app_name>
+```
+**Remember:** <your_heroku_app_name> is the name of your heroku app.
+Double check the environment variable was set:
+```
+echo $JDBC_DATABASE_URL
+```
+It should return a string like ```jdbc:postgresql://...```.
+**Note:** This configuration will be lost once you close the terminal, do no try to make it permanent, the crendentials are renovated often.
+
+### Connect to you database via CLI
+In your terminal, enter to your DB with the following command:
+```
+heroku pg:psql <your_postgresql_add_on_name> --app <your_heroku_app_name>
+```
+**Remember:** <your_heroku_app_name> is the name of your heroku app, and <your_postgresql_add_on_name> is your postgres add-on name.
+You can get your precise command from your Postgres add-on dashboard, go to settings > admistration > view credentials > **Heroku cli**
+
+#### Manage your database
+Create the folowing table, it is required by the [DB servlet](https://github.com/luminaxster/swe432tomcat/blob/master/src/main/java/servlet/DatabaseServlet.java) to work:
+```
+CREATE TABLE entries( id serial PRIMARY KEY, name VARCHAR (50) NOT NULL, age INT  CHECK (age > 0  AND age <150) NOT NULL);
+```
+Try adding an entry:
+```
+INSERT INTO entries (name, age) VALUES ('Logan', 149);
+```
+You can observe persisted in that table:
+```
+SELECT name, age FROM entries;
+```
+
+
 ## Follow the original guide
 For more details about how to create a Tomcat setup from scratch, go to the Dev Center guide on how to [Create a Java Web Application using Embedded Tomcat](https://devcenter.heroku.com/articles/create-a-java-web-application-using-embedded-tomcat).
 
 ## Resources: 
 
 https://kbroman.org/github_tutorial/pages/init.html  
+https://devcenter.heroku.com/articles/heroku-postgresql
+https://devcenter.heroku.com/articles/heroku-postgresql#local-setup
+https://devcenter.heroku.com/articles/dataclips
+https://www.vogella.com/tutorials/JavaXML/article.html
 
 
 
