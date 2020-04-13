@@ -215,11 +215,13 @@ In order for your Java applications to access the DB via JDBC, you need to setup
 export JDBC_DATABASE_URL=`heroku run echo \\$JDBC_DATABASE_URL -a <your_heroku_app_name>
 ```
 **Remember:** <your_heroku_app_name> is the name of your heroku app.
+
 Double check the environment variable was set:
 ```
 echo $JDBC_DATABASE_URL
 ```
 It should return a string like ```jdbc:postgresql://...```.
+
 **Note:** This configuration will be lost once you close the terminal, do no try to make it permanent, the crendentials are renovated often.
 
 ### Connect to you database via CLI
@@ -228,6 +230,7 @@ In your terminal, enter to your DB with the following command:
 heroku pg:psql <your_postgresql_add_on_name> --app <your_heroku_app_name>
 ```
 **Remember:** <your_heroku_app_name> is the name of your heroku app, and <your_postgresql_add_on_name> is your postgres add-on name.
+
 You can get your precise command from your Postgres add-on dashboard, go to settings > admistration > view credentials > **Heroku cli**
 
 #### Manage your database
