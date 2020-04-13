@@ -196,11 +196,15 @@ You can get Postgres [here](https://postgresapp.com/downloads.html) and choose y
 
 *Windows:* Using the wizard will install the DB, services and basic tools we need to manage and query the database.
 
+
 *Mac:* Select Postgres.app with PostgreSQL 12. Then execute this command in your terminal:
+
 ```
-sudo mkdir -p /etc/paths.d && echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
+sudo mkdir -p /etc/paths.d &&
+echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
 ```
 Reopen the terminal and try:
+
 ```which psql```
 
 It should return a file system path like ```/Applications/Postgres.app/Contents/Versions/latest/bin/psql```.
@@ -228,14 +232,21 @@ You can get your precise command from your Postgres add-on dashboard, go to sett
 
 #### Manage your database
 Create the folowing table, it is required by the [DB servlet](https://github.com/luminaxster/swe432tomcat/blob/master/src/main/java/servlet/DatabaseServlet.java) to work:
+
 ```
-CREATE TABLE entries( id serial PRIMARY KEY, name VARCHAR (50) NOT NULL, age INT  CHECK (age > 0  AND age <150) NOT NULL);
+CREATE TABLE entries( 
+  id serial PRIMARY KEY,
+  name VARCHAR (50) NOT NULL,
+  age INT  CHECK (age > 0  AND age <150) NOT NULL
+);
 ```
+
+#### Try some commands
 Try adding an entry:
 ```
 INSERT INTO entries (name, age) VALUES ('Logan', 149);
 ```
-You can observe persisted in that table:
+Or querying persisted data in that table:
 ```
 SELECT name, age FROM entries;
 ```
@@ -246,10 +257,14 @@ For more details about how to create a Tomcat setup from scratch, go to the Dev 
 
 ## Resources: 
 
-https://kbroman.org/github_tutorial/pages/init.html  
+https://kbroman.org/github_tutorial/pages/init.html 
+
 https://devcenter.heroku.com/articles/heroku-postgresql
+
 https://devcenter.heroku.com/articles/heroku-postgresql#local-setup
+
 https://devcenter.heroku.com/articles/dataclips
+
 https://www.vogella.com/tutorials/JavaXML/article.html
 
 
