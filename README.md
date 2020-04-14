@@ -294,10 +294,76 @@ Your Tomcat server should be up and running at `localhost:5000`, and the databas
 **Note:** To stop the server from running, press `Ctrl+C`.  If you close the terminal, the server will stop as well. 
 
 ### 4. Connecting to database in the servlet
+```Java
+...
+private class EntriesManager{
+      private Connection getConnection()
+        throws URISyntaxException, SQLException {
+          String dbUrl = System.getenv("JDBC_DATABASE_URL");
+          return DriverManager.getConnection(dbUrl);
+      }
+      ...
+```
+This line is where the Postgres installation, adding Postgres as a dependency and configuring the environment variable come together, missing any of those steps will cause a runtime error.
+**Note:** `"JDBC_DATABASE_URL"` is not saved to your profile, you will to setting up before running `heroku local`, this is explained in section x.
 
 ### 5. Saving data into the database
+```Java
+...
+public boolean save(String name, int age){
+        PreparedStatement statement = null;
+        try {
+          connection = connection == null ? getConnection() : connection;
+          statement = connection.prepareStatement(
+          "INSERT INTO entries (name, age) values (?, ?)"
+          );
+          statement.setString(1, name);
+          statement.setInt(2, age);
+          statement.executeUpdate();
+          return true;
+          ...
+```
 
 ### 6. Queryng data from the database
+```Java
+public String getAllAsHTMLTable(){
+        Statement statement = null;
+        ResultSet entries = null;
+        StringBuilder htmlOut = new StringBuilder();
+        try {
+          connection = connection == null ? getConnection() : connection;
+          statement = connection.createStatement();
+          entries = statement.executeQuery(
+          "SELECT "+Data.NAME.name()+", "+Data.AGE.name()+" FROM entries");
+
+          while (entries.next()) {
+              htmlOut.append("<tr><td>");
+              htmlOut.append(entries.getString(1)); //name
+              htmlOut.append("</td><td>");
+              htmlOut.append(entries.getInt(2)); //age
+              htmlOut.append("</td></tr>");
+          }
+          if(htmlOut.length() == 0){
+            htmlOut.append("<tr><td> no entries</td></tr>");
+          }
+        }catch(URISyntaxException uriSyntaxException){
+        ...
+```
+
+### 7. Using both it the servlet
+
+```Java
+... doPost(...
+ EntriesManager entriesManager = new EntriesManager();
+
+       boolean ok = entriesManager.save(name,age);
+       String saveStatusHTML =
+       "<p>"+(ok? "Entry added.":"Entry was not added.")+"</p>";
+       PrintHead(out);
+       PrintEntriesBody(
+        out, saveStatusHTML, entriesManager.getAllAsHTMLTable());
+       PrintTail(out);
+ ```
 
 # Grading: sharing your repo with the TA
 Your assignment's repo must be private at all times and for me to grade your code, please add me as a contributor. My username is luminaxster.
