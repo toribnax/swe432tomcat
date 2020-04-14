@@ -1,5 +1,7 @@
 package servlet;
-
+// Written by David Gonzalez, April 2020
+// Modified by Jeff Offutt
+// Built to deploy in github with Heroku
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
