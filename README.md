@@ -289,7 +289,9 @@ The terminal should show a line like:
 ```ShellSession
 INFO: Starting ProtocolHandler ["http-nio-5000"]
 ```
-To stop the server from running, press `Ctrl+C`. Your Tomcat server should be up and running at `localhost:5000`, and the database servlet should be at `localhost:5000/database`.
+Your Tomcat server should be up and running at `localhost:5000`, and the database servlet should be at `localhost:5000/database`.
+
+**Note:** To stop the server from running, press `Ctrl+C`.  If you close the terminal, the server will stop as well. 
 
 ### 4. Connecting to database in the servlet
 
