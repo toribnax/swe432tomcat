@@ -181,7 +181,7 @@ Finally, once you are done making changes in your app locally -- you have achiev
 ## Important
 After you are satisfied changing your code, remember they are still in your machine. You must push these changes to your github's web repo (remote), only then they will be visible to everybody. If you followed the steps linking your Heroku app with this repo, pushing changes in to your remote repo will redeploy your Heroku app.
 
-# Add persistence to your Heroku app
+# Add database persistence to your Heroku app
 Go to your Heroku dashboard, choose your Tomcat servlet app, go to the Resources tab, click on find add-ons, type  postgres, Heroku-Postrgres will show up, select it with Hobby dev (free) tier.
 
 **Or**, in a terminal:
@@ -236,10 +236,18 @@ Once that command executes correctly, you should be now using the database CLI, 
 ```ShellSession
 <your_heroku_app_name>::DATABASE=>
 ```
-Now you run DB management and query commands.
+Now you run DB management and query commands like:
+```SQL
+CREATE TABLE test(id SERIAL PRIMARY KEY, value VARCHAR (50) NOT NULL);
+INSERT INTO test (value) VALUES ('a value');
+SELECT name FROM test;
+```
+## Connecting to the database within your app: The Database Servlet
+This project has an [example](https://github.com/luminaxster/swe432tomcat/blob/master/src/main/java/servlet/DatabaseServlet.java) using Java DataBase Connection(JDBC), there are plenty of ways to use Java or related frameworks APIs to connect to databases elsewhere.
 
-#### Manage and query your database
-In your database CLI, create the folowing table, it is required by the [DB servlet](https://github.com/luminaxster/swe432tomcat/blob/master/src/main/java/servlet/DatabaseServlet.java) to work:
+Follow the next sections to follow how the Database Servlet was implemented. 
+### 1. Manage and query your database
+In your database CLI (the same accessed in [a previous section](blah)), create the folowing table, it is required by the [DB servlet](https://github.com/luminaxster/swe432tomcat/blob/master/src/main/java/servlet/DatabaseServlet.java) to work:
 
 ```SQL
 CREATE TABLE entries( 
@@ -249,8 +257,7 @@ CREATE TABLE entries(
 );
 ```
 
-### Try some commands
-Try adding an entry:
+Try adding a row to the table:
 ```SQL
 INSERT INTO entries (name, age) VALUES ('Logan', 149);
 ```
@@ -259,7 +266,7 @@ Or querying persisted data in that table:
 SELECT name, age FROM entries;
 ```
 
-## Connecting to the DB within your servlet (or any Java class)
+### 2. Add Postgres to your app
 You need to add Postgres to your dependencies in your `pom.xml`:
 ```XML
 </dependencies>
@@ -272,6 +279,23 @@ You need to add Postgres to your dependencies in your `pom.xml`:
     ...
 </dependencies>
 ```
+### 3. Sanity Check
+Try to run the app locally, at a terminal in your app's root folder:
+```ShellSession
+mvn package
+heroku local
+```
+The terminal should show a line like:
+```ShellSession
+INFO: Starting ProtocolHandler ["http-nio-5000"]
+```
+To stop the server from running, press `Ctrl+C`. Your Tomcat server should be up and running at `localhost:5000`, and the database servlet should be at `localhost:5000/database`.
+
+### 4. Connecting to database in the servlet
+
+### 5. Saving data into the database
+
+### 6. Queryng data from the database
 
 # Grading: sharing your repo with the TA
 Your assignment's repo must be private at all times and for me to grade your code, please add me as a contributor. My username is luminaxster.
