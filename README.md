@@ -304,8 +304,9 @@ private class EntriesManager{
       }
       ...
 ```
-This line is where the Postgres installation, adding Postgres as a dependency and configuring the environment variable come together, missing any of those steps will cause a runtime error.
-**Note:** `"JDBC_DATABASE_URL"` is not saved to your profile, you will to setting up before running `heroku local`, this is explained in section x.
+This lines are where adding Postgres as a dependency, and configuring the environment variable come together, missing any of these steps will cause a runtime error. In `String dbUrl = System.getenv("JDBC_DATABASE_URL");`, the environment variable is used `JDBC_DATABASE_URL`, make sure it is setup with `echo $JDBC_DATABASE_URL`. Then in `return DriverManager.getConnection(dbUrl);`, the Postgres database driver is detected based on the previous URL, the driver manager will look for it in your Postgres installed dependency and the use it to connect to the database with the credentiasl specified in the URL. 
+
+**Troubleshooting:** Since `"JDBC_DATABASE_URL"` is not saved to your profile, make sure is set up before running `heroku local`, this is explained in this [previous section](https://github.com/luminaxster/swe432tomcat/blob/master/README.md#configure-the-connection-to-your-remote-db-add-ons-in-heroku).
 
 ### 5. Saving data into the database
 ```Java
@@ -323,6 +324,10 @@ public boolean save(String name, int age){
           return true;
           ...
 ```
+After getting a new or existing `connection`, preparing a statement to insert a row in table `entries`, the order of values set follow the sequence determined by the tuple `(name, age)` in the statement: `statement.setString(1, name)` is concatenated where the first question mark is in `(?, ?)` and ` statement.setInt(2, age)` to the second.
+
+Finally,  `statement.executeUpdate();` will attempt to insert the row, if no errors are thrown, it does not mean it succeded, the return value of the method is a count of the affected rows, in this context `1` should be successfully inserted one row. 
+**Important:** Prepared statements prevent SQL injection attacks. Using other API methods to do so will let your server vulnerable.
 
 ### 6. Queryng data from the database
 ```Java
@@ -349,6 +354,9 @@ public String getAllAsHTMLTable(){
         }catch(URISyntaxException uriSyntaxException){
         ...
 ```
+After gettign a new or exisitng connection the database, executing the query returns a ResultSet, which can be iterated. In this case were building a HTML table with rows obtained from the query result.
+
+**Important:** using only executeQuery() to make querys prevent SQL injection attacks. Using other API methods to do so will let your server vulnerable.
 
 ### 7. Using both it the servlet
 
