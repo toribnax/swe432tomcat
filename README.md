@@ -11,16 +11,16 @@ We are working with two different phases of the software lifecycle: **developmen
 **Disclaimer:** Please take a moment to explore each concept, technology, command, activity and action used in this tutorial, for brevity the level of detail is limited to help you deploy servlets in Heroku. 
 
 ## Quick Reference
-Use these commnads only if you already followed this tutorial and want a quick reminder of common tasks:
+Use these terminal commands only if you already followed this tutorial and want a quick reminder of common tasks:
 
 ### Redeploying the app by pushing changes to the remote repo
-```
-git add . ; git commit -m "TODO: I really should explain these changes"; git push
+```ShellSession
+git a . & git c -m "TODO: I really should explain these changes" & git push
 ```
 
 ### Rerunning the app locally after some edits
-```
-mvn package ; heroku local
+```ShellSession
+mvn package & heroku local
 ```
 
 ## Create GitHub and Heroku accounts
@@ -44,8 +44,8 @@ If you have not installed Git before, you can get it here: https://git-scm.com/d
 Now, follow these steps to bring this repo into your Github account:
 
 ### 1. Get this repo locally in your machine:
-This code contains all necessary boilerplate for supporting servlets and JSPs in a Heroku app:
-```
+This code contains all necessary boilerplate for supporting servlets and JSPs in a Heroku app, in a terminal:
+```ShellSession
 git clone https://github.com/luminaxster/swe432tomcat.git
 ```
 
@@ -56,24 +56,26 @@ a. Go to [Github](www.github.com), login into your account, select the "reposito
 c. This will take you to your new repository's page. Copy the url to access your repo in the quick setup section.
 It should look like this:
 
-``` https://github.com/<your_username>/<newly_created_repo_name>.git```
+```HTTP
+https://github.com/<your_username>/<newly_created_repo_name>.git
+```
 
 We will use this URL in step 3.
 
 ### 3. Redirect the local repo to your own repo and save the changes:
 
-Remember to replace the url from step 2 ( ``` https://github.com/<your_username>/<newly_created_repo_name>.git ``` ) with your own repo's url.
+Remember to replace the url from step 2 ( `https://github.com/<your_username>/<newly_created_repo_name>.git` ) with your own repo's url.
 
 #### a. Setting up your remote repo in Git
-The following commands **only need have to be used once**, in the command line:
-```
+The following commands **only need have to be used once**, in a terminal:
+```ShellSession
 cd swe432tomcat
 git init
 git remote set-url origin "https://github.com/<your_username>/<newly_created_repo_name>.git"
 ```
 #### b. Push your local changes into your remote repo
-The following commands **will be reused every time you want to send your changes to GitHub**, in the command line:
-```
+The following commands **will be reused every time you want to send your changes to GitHub**, in a terminal:
+```ShellSession
 git add .
 git commit -m "Initial commit: cloned repo"
 git push
@@ -97,7 +99,7 @@ Once in your Heroku app web page, select the "deploy" tab:
  
  e. activate automatic deploys
  
- f. click on deploy the "master" branch (only this time so you can see the changes immediately)
+ f. click on deploy the `master` branch (only this time so you can see the changes immediately)
  
  g. Once your deploy is processed, click on "View"
  
@@ -113,15 +115,15 @@ Before deploying your app in the Web, you normally program, debug and test your 
 
 If you have not installed Apache Maven before, you can get the binaries here: https://maven.apache.org/download.cgi, and follow the instructions here: https://maven.apache.org/install.html.
 
-Note: if you are using a Unix-like system (e.g MacOS, Linux), you need to open a terminal and add the path to Maven permanently in your bash profile:
-```
+Note: if you are using a *Unix-like* system (e.g MacOS, Linux), you need to open a terminal and add the path to Maven permanently in your bash profile:
+```ShellSession
 vi ~/.bash_profile
 ```
 And add the following line to this file so Maven is runnable from the terminal from now on:
-```
+```ShellSession
 export PATH=/opt/apache-maven-3.6.3/bin:$PATH
 ```
-The line above assumes Maven's path is "/opt/apache-maven-3.6.3/bin", or that your Maven download has been moved there. You can use a different path too, make sure your path is reflected in this line.
+The line above assumes Maven's path is `/opt/apache-maven-3.6.3/bin`, or that your Maven download has been moved there. You can use a different path too, make sure your path is reflected in this line.
 
 For Windows machines, add Maven's path to the PATH property in the system's environment variables.
 
@@ -131,46 +133,46 @@ For Windows machines, add Maven's path to the PATH property in the system's envi
 If you have not installed the Heroku CLI  before, you can get it here: https://devcenter.heroku.com/articles/heroku-cli.
 
 For Windows machines, this repo's [Procfile](https://github.com/luminaxster/swe432tomcat/blob/master/Procfile) is set up for Unix-like machines, "sh" is the shell command in Unix . In Windows, replace the following line in the Procfile:
-```
+```ShellSession
 web: sh target/bin/webapp
 ```
  
 for the following:
-```
+```ShellSession
 web: target\bin\webapp.bat
 ```
 **Note:** If you are Windows user, do not push your Procfile to your remote repo. An error like this one will be thrown:
-```"targetbinwebapp not found" error and then an "app crashed" error with code H10 ...```
+`"targetbinwebapp not found" error and then an "app crashed" error with code H10 ...`.
 
 ### Build and run your app
-To run the app contained in your repo, go your repo's root folder, the "POM.xml" should be there, this file is the configuration Maven uses to build your app so Heroku can run it. You should perform the following commands each time you want to run the latest version of your app, make sure there are no errors after you run them. 
+To run the app contained in your repo, go your repo's root folder, the `POM.xml` should be there, this file is the configuration Maven uses to build your app so Heroku can run it. You should perform the following commands each time you want to run the latest version of your app, make sure there are no errors after you run them. 
 
 Run this command in your terminal to build the app:
-```
+```ShellSession
 mvn package
 ```
 
 And this one to run it:
 
-```
+```ShellSession
 heroku local
 ```
 
-You should be able to access your app at http://localhost:5000.
+You should be able to access your app at `http://localhost:5000`.
 
 ### Making changes: adding a new servlet
 
-In your machine, place your servlet file in the ```src/main/java/servlet``` folder and add the servlet annotation so your Apache Tomcat knows how to map it:
-```
+In your machine, place your servlet file in the `src/main/java/servlet` folder and add the servlet annotation so your Apache Tomcat knows how to map it:
+```Java
 import javax.servlet.annotation.WebServlet;
-
+...
 @WebServlet( name = "servletName", urlPatterns = {"/servicePathName"} )
 ```
 The line above handles **servlet mapping**, which makes its servlet instance available at yourServerUrl/**servicePathName**.
 
-Now you can observe, debug or test your app locally by building your app (in terminal: ```mvn package```) and running it in your local server (in terminal: ```heroku local```). After that, ```localhost:5000/servicePathName``` (as in urlPatterns property from the annotation above) must be working.
+Now you can observe, debug or test your app locally by building your app (in terminal: `mvn package`) and running it in your local server (in terminal: `heroku local`). After that, `localhost:5000/servicePathName` (as in urlPatterns property from the annotation above) must be working.
 
-**Note:** If your servlet mapping setup failed or is missing, the URL ```localhost:5000/servicePathName``` or ```yourWebsite/servicePathName``` won't be accessible and show a ```404: Not found error```. Make sure the @WebServlet annotation is in the desired servlet java file and the ```localhost:5000/servicePathName``` matches ```@WebServlet.. urlPatterns = {"/servicePathName"}```.
+**Note:** If your servlet mapping setup failed or is missing, the URL `localhost:5000/servicePathName` or `yourWebsite/servicePathName` won't be accessible and show a `404: Not found error`. Make sure the `@WebServlet` annotation is in the desired servlet java file and the `localhost:5000/servicePathName` matches `@WebServlet.. urlPatterns = {"/servicePathName"}`.
 
 ## Developing and Deploying continuous loop
 
@@ -179,17 +181,14 @@ Finally, once you are done making changes in your app locally -- you have achiev
 ## Important
 After you are satisfied changing your code, remember they are still in your machine. You must push these changes to your github's web repo (remote), only then they will be visible to everybody. If you followed the steps linking your Heroku app with this repo, pushing changes in to your remote repo will redeploy your Heroku app.
 
-## Sharing your repo with the TA
-Your repo must be private at all times and for me to grade your code, please add me as a contributor. My username is luminaxster.
-
 # Add persistence to your Heroku app
 Go to your Heroku dashboard, choose your Tomcat servlet app, go to the Resources tab, click on find add-ons, type  postgres, Heroku-Postrgres will show up, select it with Hobby dev (free) tier.
 
-**Or**, in your terminal:
-```
+**Or**, in a terminal:
+```ShellSession
 heroku addons:create heroku-postgresql:hobby-dev --app <your_heroku_app_name>
 ```
-**Remember:** <your_heroku_app_name> is the name of your heroku app.
+**Remember:** `<your_heroku_app_name>` is the name of your heroku app.
 
 ## Install PostgreSQL
 You can get Postgres [here](https://postgresapp.com/downloads.html) and choose your platform binaries.
@@ -198,45 +197,51 @@ You can get Postgres [here](https://postgresapp.com/downloads.html) and choose y
 
 
 *Mac:* Select Postgres.app with PostgreSQL 12. Then execute this command in your terminal:
-
-```
+```ShellSession
 sudo mkdir -p /etc/paths.d &&
 echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
 ```
 Reopen the terminal and try:
-
-```which psql```
-
-It should return a file system path like ```/Applications/Postgres.app/Contents/Versions/latest/bin/psql```.
-
-### Configure the connection to your remote DB add-ons in Heroku
-In order for your Java applications to access the DB via JDBC, you need to setup the connection. In your terminal, execute:
+```ShellSession
+which psql
 ```
+
+It should return a file system path like `/Applications/Postgres.app/Contents/Versions/latest/bin/psql`.
+
+## Configure the connection to your remote DB add-ons in Heroku
+In order for your Java applications to access the DB via JDBC, you need to setup the connection. In your terminal, execute:
+```ShellSession
 export JDBC_DATABASE_URL=`heroku run echo \\$JDBC_DATABASE_URL -a <your_heroku_app_name>
 ```
-**Remember:** <your_heroku_app_name> is the name of your heroku app.
+**Remember:** `<your_heroku_app_name>` is the name of your heroku app.
 
 Double check the environment variable was set:
 ```
 echo $JDBC_DATABASE_URL
 ```
-It should return a string like ```jdbc:postgresql://...```.
+It should return a string like `jdbc:postgresql://...`.
 
 **Note:** This configuration will be lost once you close the terminal, do no try to make it permanent, the crendentials are renovated often.
 
 ### Connect to you database via CLI
 In your terminal, enter to your DB with the following command:
-```
+```ShellSession
 heroku pg:psql <your_postgresql_add_on_name> --app <your_heroku_app_name>
 ```
-**Remember:** <your_heroku_app_name> is the name of your heroku app, and <your_postgresql_add_on_name> is your postgres add-on name.
+**Remember:** `<your_heroku_app_name>` is the name of your heroku app, and `<your_postgresql_add_on_name>` is your postgres add-on name.
 
 You can get your precise command from your Postgres add-on dashboard, go to settings > admistration > view credentials > **Heroku cli**
 
-#### Manage your database
-Create the folowing table, it is required by the [DB servlet](https://github.com/luminaxster/swe432tomcat/blob/master/src/main/java/servlet/DatabaseServlet.java) to work:
-
+Once that command executes correctly, you should be now using the database CLI, in your shell, the input should look like this:
+```ShellSession
+<your_heroku_app_name>::DATABASE=>
 ```
+Now you run DB management and query commands.
+
+#### Manage and query your database
+In your database CLI, create the folowing table, it is required by the [DB servlet](https://github.com/luminaxster/swe432tomcat/blob/master/src/main/java/servlet/DatabaseServlet.java) to work:
+
+```SQL
 CREATE TABLE entries( 
   id serial PRIMARY KEY,
   name VARCHAR (50) NOT NULL,
@@ -244,16 +249,32 @@ CREATE TABLE entries(
 );
 ```
 
-#### Try some commands
+### Try some commands
 Try adding an entry:
-```
+```SQL
 INSERT INTO entries (name, age) VALUES ('Logan', 149);
 ```
 Or querying persisted data in that table:
-```
+```SQL
 SELECT name, age FROM entries;
 ```
 
+## Connecting to the DB within your servlet (or any Java class)
+You need to add Postgres to your dependencies in your `pom.xml`:
+```XML
+</dependencies>
+    ...
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.2.1</version>
+    </dependency>
+    ...
+</dependencies>
+```
+
+# Grading: sharing your repo with the TA
+Your assignment's repo must be private at all times and for me to grade your code, please add me as a contributor. My username is luminaxster.
 
 ## Follow the original guide
 For more details about how to create a Tomcat setup from scratch, go to the Dev Center guide on how to [Create a Java Web Application using Embedded Tomcat](https://devcenter.heroku.com/articles/create-a-java-web-application-using-embedded-tomcat).
