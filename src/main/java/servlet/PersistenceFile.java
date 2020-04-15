@@ -1,5 +1,7 @@
 package servlet;
-
+// Written by David Gonzalez, April 2020
+// Modified by Jeff Offutt
+// Built to deploy in github with Heroku
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -75,17 +77,18 @@ public class PersistenceFile extends HttpServlet{
      PrintWriter out = response.getWriter();
 
      if (error.length() == 0){
-       PrintWriter entriesPrintWriter = new PrintWriter(new FileWriter(RESOURCE_FILE, true), true);
+       PrintWriter entriesPrintWriter =
+          new PrintWriter(new FileWriter(RESOURCE_FILE, true), true);
        entriesPrintWriter.println(name+VALUE_SEPARATOR+age);
        entriesPrintWriter.close();
 
-       PrintHead(out);
-       PrintResponseBody(out, RESOURCE_FILE);
-       PrintTail(out);
+       printHead(out);
+       printResponseBody(out, RESOURCE_FILE);
+       printTail(out);
      }else{
-       PrintHead(out);
-       PrintBody(out, name, age, error);
-       PrintTail(out);
+       printHead(out);
+       printBody(out, name, age, error);
+       printTail(out);
      }
   }
 
@@ -98,15 +101,15 @@ public class PersistenceFile extends HttpServlet{
          throws ServletException, IOException{
      response.setContentType("text/html");
      PrintWriter out = response.getWriter();
-     PrintHead(out);
-     PrintBody(out, "", "", "");
-     PrintTail(out);
+     printHead(out);
+     printBody(out, "", "", "");
+     printTail(out);
   }
 
   /** *****************************************************
    *  Prints the <head> of the HTML page, no <body>.
   ********************************************************* */
-  private void PrintHead (PrintWriter out){
+  private void printHead (PrintWriter out){
      out.println("<html>");
      out.println("");
      out.println("<head>");
@@ -124,14 +127,18 @@ public class PersistenceFile extends HttpServlet{
   /** *****************************************************
    *  Prints the <BODY> of the HTML page
   ********************************************************* */
-  private void PrintBody (PrintWriter out, String name, String age, String error){
+  private void printBody (
+    PrintWriter out, String name, String age, String error){
      out.println("<body onLoad=\"setFocus()\">");
      out.println("<p>");
-     out.println("A simple example that demonstrates how to persist data to a file");
+     out.println(
+     "A simple example that demonstrates how to persist data to a file");
      out.println("</p>");
 
      if(error != null && error.length() > 0){
-       out.println("<p style=\"color:red;\">Please correct the following and resubmit.</p>");
+       out.println(
+       "<p style=\"color:red;\">Please correct the following and resubmit.</p>"
+       );
        out.println("<ol>");
        out.println(error);
        out.println("</ol>");
@@ -166,10 +173,11 @@ public class PersistenceFile extends HttpServlet{
   /** *****************************************************
    *  Prints the <BODY> of the HTML page
   ********************************************************* */
-  private void PrintResponseBody (PrintWriter out, String resourcePath){
-    out.println("<body onLoad=\"setFocus()\">");
+  private void printResponseBody (PrintWriter out, String resourcePath){
+    out.println("<body>");
     out.println("<p>");
-    out.println("A simple example that demonstrates how to persist data to a file");
+    out.println(
+    "A simple example that shows entries from a plain file");
     out.println("</p>");
     out.println("");
     out.println(" <table>");
@@ -187,7 +195,8 @@ public class PersistenceFile extends HttpServlet{
           return;
         }
 
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+        BufferedReader bufferedReader =
+          new BufferedReader(new FileReader(file));
         String line;
         while ((line = bufferedReader.readLine()) != null) {
           String []  entry= line.split(VALUE_SEPARATOR);
@@ -211,7 +220,7 @@ public class PersistenceFile extends HttpServlet{
   /** *****************************************************
    *  Prints the bottom of the HTML page.
   ********************************************************* */
-  private void PrintTail (PrintWriter out){
+  private void printTail (PrintWriter out){
      out.println("");
      out.println("</html>");
   }

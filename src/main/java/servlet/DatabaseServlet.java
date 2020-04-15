@@ -1,4 +1,21 @@
 package servlet;
+// Written by David Gonzalez, April 2020
+// Modified by Jeff Offutt
+// Built to deploy in github with Heroku
+
+/*
+requires Postgresql in your pom.xml
+<dependencies>
+...
+
+<dependency>
+  <groupId>org.postgresql</groupId>
+  <artifactId>postgresql</artifactId>
+  <version>42.2.1</version>
+</dependency>
+
+...
+*/
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,10 +53,6 @@ public class DatabaseServlet extends HttpServlet{
   // Button labels
   static String OperationAdd = "Add";
 
-  // Other strings.
-  static String Style =
-  "https://www.cs.gmu.edu/~offutt/classes/432/432-style.css";
-
   private static Connection connection = null;
 
   private class EntriesManager{
@@ -54,7 +67,7 @@ public class DatabaseServlet extends HttpServlet{
         try {
           connection = connection == null ? getConnection() : connection;
           statement = connection.prepareStatement(
-          "INSERT INTO entries (name, age) values (?, ?)"
+            "INSERT INTO entries (name, age) values (?, ?)"
           );
           statement.setString(1, name);
           statement.setInt(2, age);
@@ -85,7 +98,7 @@ public class DatabaseServlet extends HttpServlet{
           connection = connection == null ? getConnection() : connection;
           statement = connection.createStatement();
           entries = statement.executeQuery(
-          "SELECT "+Data.NAME.name()+", "+Data.AGE.name()+" FROM entries");
+            "SELECT "+Data.NAME.name()+", "+Data.AGE.name()+" FROM entries");
 
           while (entries.next()) {
               htmlOut.append("<tr><td>");
@@ -166,14 +179,14 @@ public class DatabaseServlet extends HttpServlet{
        boolean ok = entriesManager.save(name,age);
        String saveStatusHTML =
        "<p>"+(ok? "Entry added.":"Entry was not added.")+"</p>";
-       PrintHead(out);
-       PrintEntriesBody(
+       printHead(out);
+       printResponseBody(
         out, saveStatusHTML, entriesManager.getAllAsHTMLTable());
-       PrintTail(out);
+       printTail(out);
      }else{
-       PrintHead(out);
-       PrintBody(out, name, rawAge, error);
-       PrintTail(out);
+       printHead(out);
+       printBody(out, name, rawAge, error);
+       printTail(out);
      }
 
 
@@ -189,72 +202,81 @@ public class DatabaseServlet extends HttpServlet{
   {
      response.setContentType("text/html");
      PrintWriter out = response.getWriter();
-     PrintHead(out);
-     PrintBody(out, "", "", "");
-     PrintTail(out);
+     printHead(out);
+     printBody(out, "", "", "");
+     printTail(out);
   } // End doGet
 
   /** *****************************************************
    *  Prints the <head> of the HTML page, no <body>.
   ********************************************************* */
-  private void PrintHead (PrintWriter out)
-  {
+  private void printHead (PrintWriter out){
      out.println("<html>");
      out.println("");
-
      out.println("<head>");
-     out.println("<title>DB Persistence Example</title>");
-     out.println(" <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Style + "\">");
+     out.println("<title>Database Persistence Example</title>");
+     // Put the focus in the name field
+     out.println ("<script>");
+     out.println ("  function setFocus(){");
+     out.println ("    document.persist2file.NAME.focus();");
+     out.println ("  }");
+     out.println ("</script>");
      out.println("</head>");
      out.println("");
-  } // End PrintHead
-
+  }
   /** *****************************************************
    *  Prints the <BODY> of the HTML page
   ********************************************************* */
-  private void PrintBody (PrintWriter out, String name, String age, String error)
-  {
-     out.println("<body>");
-     out.println("<p>");
-     out.println("A simple example that demonstrates how to keep data in a file");
-     out.println("</p>");
+  private void printBody (
+   PrintWriter out, String name, String age, String error){
+    out.println("<body onLoad=\"setFocus()\">");
+    out.println("<p>");
+    out.println(
+      "A simple example that demonstrates how to persist data into a database");
+    out.println("</p>");
 
-     if(error != null && error.length() > 0){
-       out.println("<p style=\"color:red;\"> We encounter the following issues:</p>");
-       out.println("<ol>");
-       out.println(error);
-       out.println("</ol>");
-     }
+    if(error != null && error.length() > 0){
+      out.println(
+      "<p style=\"color:red;\">Please correct the following and resubmit.</p>");
+      out.println("<ol>");
+      out.println(error);
+      out.println("</ol>");
+    }
 
-     out.print  ("<form method=\"post\"");
-     out.println(" action=\"/" + Servlet + "\">");
-     out.println("");
-     out.println(" <table>");
-     out.println("  <tr>");
-     out.println("   <td>Name:");
-     out.println("   <td><input type=\"text\" name=\""+Data.NAME.name()+"\" value=\""+name+"\" size=30 required>");
-     out.println("  </tr>");
-     out.println("  <tr>");
-     out.println("   <td>Age:");
-     out.println("   <td><input type=\"text\" oninput=\"this.value=this.value.replace(/[^0-9]/g,'');\" name=\""+Data.AGE.name()+"\" value=\""+age+"\" size=3 required>");
-     out.println("  </tr>");
-     out.println(" </table>");
-     out.println(" <br>");
-     out.println(" <br>");
-     out.println(" <input type=\"submit\" value=\"" + OperationAdd + "\" name=\"Operation\">");
-     out.println(" <input type=\"reset\" value=\"Reset\" name=\"reset\">");
-     out.println("</form>");
-     out.println("");
-     out.println("</body>");
+    out.print  ("<form name=\"persist2file\" method=\"post\"");
+    out.println(" action=\""+Domain+Path+Servlet+"\">");
+    out.println("");
+    out.println(" <table>");
+    out.println("  <tr>");
+    out.println("   <td>Name:");
+    out.println("   <td><input type=\"text\" name=\""
+      +Data.NAME.name()+"\" value=\""+name+"\" size=30 required>");
+    out.println("  </tr>");
+    out.println("  <tr>");
+    out.println("   <td>Age:");
+    out.println("   <td><input type=\"text\" "
+      +"oninput=\"this.value=this.value.replace(/[^0-9]/g,'');\" name=\""
+      +Data.AGE.name()+"\" value=\""+age+"\" size=3 required>");
+    out.println("  </tr>");
+    out.println(" </table>");
+    out.println(" <br>");
+    out.println(" <br>");
+    out.println(" <input type=\"submit\" value=\""
+      + OperationAdd + "\" name=\"Operation\">");
+    out.println(" <input type=\"reset\" value=\"Reset\" name=\"reset\">");
+    out.println("</form>");
+    out.println("");
+    out.println("</body>");
   } // End PrintBody
 
   /** *****************************************************
    *  Prints the <BODY> of the HTML page
   ********************************************************* */
-  private void PrintEntriesBody (PrintWriter out, String status, String results){
+  private void printResponseBody (
+   PrintWriter out, String status, String results){
     out.println("<body>");
     out.println("<p>");
-    out.println("A simple example that shows entries persisted on a DB");
+    out.println("A simple example that shows entries from on a database");
     out.println("</p>");
     out.println("");
     out.println(status);
@@ -268,7 +290,7 @@ public class DatabaseServlet extends HttpServlet{
   /** *****************************************************
    *  Prints the bottom of the HTML page.
   ********************************************************* */
-  private void PrintTail (PrintWriter out)
+  private void printTail (PrintWriter out)
   {
      out.println("");
      out.println("</html>");

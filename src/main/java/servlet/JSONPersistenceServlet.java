@@ -1,8 +1,23 @@
 package servlet;
-
+// Written by David Gonzalez, April 2020
+// Modified by Jeff Offutt
+// Built to deploy in github with Heroku
 import java.util.List;
 import java.util.ArrayList;
 
+/*
+requires Gson in your pom.xml
+<dependencies>
+...
+
+  <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.8.5</version>
+    </dependency>
+
+...
+*/
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -31,10 +46,6 @@ public class JSONPersistenceServlet extends HttpServlet{
 
   // Button labels
   static String OperationAdd = "Add";
-
-  // Other strings.
-  static String Style =
-    "https://www.cs.gmu.edu/~offutt/classes/432/432-style.css";
 
   public class Entry {
     String name;
@@ -83,7 +94,7 @@ public class JSONPersistenceServlet extends HttpServlet{
           new BufferedReader(new FileReader(file));
         Entries readEntries =
           new Gson().fromJson(bufferedReader, Entries.class);
-          
+
         if(readEntries != null && readEntries.entries != null){
           entries = readEntries;
         }
@@ -98,11 +109,13 @@ public class JSONPersistenceServlet extends HttpServlet{
     public String getAllAsHTMLTable(Entries entries){
       StringBuilder htmlOut = new StringBuilder("<table>");
       htmlOut.append("<tr><th>Name</th><th>Age</th></tr>");
-      if(entries == null || entries.entries == null || entries.entries.size() == 0){
+      if(entries == null
+          || entries.entries == null || entries.entries.size() == 0){
         htmlOut.append("<tr><td>No entries yet.</td></tr>");
       }else{
         for(Entry entry: entries.entries){
-           htmlOut.append("<tr><td>"+entry.name+"</td><td>"+entry.age+"</td></tr>");
+           htmlOut.append(
+           "<tr><td>"+entry.name+"</td><td>"+entry.age+"</td></tr>");
         }
       }
       htmlOut.append("</table>");
@@ -159,19 +172,19 @@ public class JSONPersistenceServlet extends HttpServlet{
        EntryManager entryManager = new EntryManager();
        entryManager.setFilePath(RESOURCE_FILE);
        Entries newEntries=entryManager.save(name, age);
+
+       printHead(out);
        if(newEntries ==  null){
          error+= "<li>Could not save entry.</li>";
-         PrintHead(out);
-         PrintBody(out, name, rawAge, error);
-         PrintTail(out);
+         printBody(out, name, rawAge, error);
+       }else{
+         printResponseBody(out, entryManager.getAllAsHTMLTable(newEntries));
        }
-       PrintHead(out);
-       PrintEntriesBody(out, entryManager.getAllAsHTMLTable(newEntries));
-       PrintTail(out);
+       printTail(out);
      }else{
-       PrintHead(out);
-       PrintBody(out, name, rawAge, error);
-       PrintTail(out);
+       printHead(out);
+       printBody(out, name, rawAge, error);
+       printTail(out);
      }
 
 
@@ -186,21 +199,25 @@ public class JSONPersistenceServlet extends HttpServlet{
          throws ServletException, IOException{
      response.setContentType("text/html");
      PrintWriter out = response.getWriter();
-     PrintHead(out);
-     PrintBody(out, "", "", "");
-     PrintTail(out);
+     printHead(out);
+     printBody(out, "", "", "");
+     printTail(out);
   }
 
   /** *****************************************************
    *  Prints the <head> of the HTML page, no <body>.
   ********************************************************* */
-  private void PrintHead (PrintWriter out){
+  private void printHead (PrintWriter out){
      out.println("<html>");
      out.println("");
      out.println("<head>");
-     out.println("<title>JSON Persistence Example</title>");
-     out.println(
-     " <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Style + "\">");
+     out.println("<title>JSON File Persistence Example</title>");
+     // Put the focus in the name field
+     out.println ("<script>");
+     out.println ("  function setFocus(){");
+     out.println ("    document.persist2file.NAME.focus();");
+     out.println ("  }");
+     out.println ("</script>");
      out.println("</head>");
      out.println("");
   }
@@ -208,55 +225,57 @@ public class JSONPersistenceServlet extends HttpServlet{
   /** *****************************************************
    *  Prints the <BODY> of the HTML page
   ********************************************************* */
-  private void PrintBody (
+  private void printBody (
     PrintWriter out, String name, String age, String error){
-     out.println("<body>");
-     out.println("<p>");
-     out.println(
-     "A simple example that demonstrates how to keep data in a file");
-     out.println("</p>");
+    out.println("<body onLoad=\"setFocus()\">");
+    out.println("<p>");
+    out.println(
+      "A simple example that demonstrates how to persist JSON data to a file"
+      );
+    out.println("</p>");
 
-     if(error != null && error.length() > 0){
-       out.println(
-       "<p style=\"color:red;\"> We encounter the following issues:</p>");
-       out.println("<ol>");
-       out.println(error);
-       out.println("</ol>");
-     }
+    if(error != null && error.length() > 0){
+      out.println(
+      "<p style=\"color:red;\">Please correct the following and resubmit.</p>"
+      );
+      out.println("<ol>");
+      out.println(error);
+      out.println("</ol>");
+    }
 
-     out.print  ("<form method=\"post\"");
-     out.println(" action=\""+Domain+Path+Servlet+"\">");
-     out.println("");
-     out.println(" <table>");
-     out.println("  <tr>");
-     out.println("   <td>Name:</td>");
-     out.println("   <td><input type=\"text\" name=\""+Data.NAME.name()
+    out.print  ("<form name=\"persist2file\" method=\"post\"");
+    out.println(" action=\""+Domain+Path+Servlet+"\">");
+    out.println("");
+    out.println(" <table>");
+    out.println("  <tr>");
+    out.println("   <td>Name:</td>");
+    out.println("   <td><input type=\"text\" name=\""+Data.NAME.name()
       +"\" value=\""+name+"\" size=30 required></td>");
-     out.println("  </tr>");
-     out.println("  <tr>");
-     out.println("   <td>Age:</td>");
-     out.println("   <td><input type=\"text\"  name=\""+Data.AGE.name()
+    out.println("  </tr>");
+    out.println("  <tr>");
+    out.println("   <td>Age:</td>");
+    out.println("   <td><input type=\"text\"  name=\""+Data.AGE.name()
       +"\" oninput=\"this.value=this.value.replace(/[^0-9]/g,'');\" value=\""
       +age+"\" size=3 required></td>");
-     out.println("  </tr>");
-     out.println(" </table>");
-     out.println(" <br>");
-     out.println(" <br>");
-     out.println(" <input type=\"submit\" value=\"" + OperationAdd
+    out.println("  </tr>");
+    out.println(" </table>");
+    out.println(" <br>");
+    out.println(" <br>");
+    out.println(" <input type=\"submit\" value=\"" + OperationAdd
       + "\" name=\"Operation\">");
-     out.println(" <input type=\"reset\" value=\"Reset\" name=\"reset\">");
-     out.println("</form>");
-     out.println("");
-     out.println("</body>");
+    out.println(" <input type=\"reset\" value=\"Reset\" name=\"reset\">");
+    out.println("</form>");
+    out.println("");
+    out.println("</body>");
   }
 
   /** *****************************************************
-   *  Prints the <BODY> of the HTML page
+   *  Prints the <BODY> of the HTML page with persisted entries
   ********************************************************* */
-  private void PrintEntriesBody (PrintWriter out, String tableString){
+  private void printResponseBody (PrintWriter out, String tableString){
     out.println("<body>");
     out.println("<p>");
-    out.println("A simple example that shows entries persisted on a JSON file");
+    out.println("A simple example that shows entries from a JSON file");
     out.println("</p>");
     out.println("");
     out.println(tableString);
@@ -267,7 +286,7 @@ public class JSONPersistenceServlet extends HttpServlet{
   /** *****************************************************
    *  Prints the bottom of the HTML page.
   ********************************************************* */
-  private void PrintTail (PrintWriter out){
+  private void printTail (PrintWriter out){
      out.println("");
      out.println("</html>");
   }
