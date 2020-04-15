@@ -306,7 +306,7 @@ private class EntriesManager{
 ```
 This lines are where adding Postgres as a dependency, and configuring the environment variable come together, missing any of these steps will cause a runtime error. In `String dbUrl = System.getenv("JDBC_DATABASE_URL");`, the environment variable is used `JDBC_DATABASE_URL`, make sure it is setup with `echo $JDBC_DATABASE_URL`. Then in `return DriverManager.getConnection(dbUrl);`, the Postgres database driver is detected based on the previous URL, the driver manager will look for it in your Postgres installed dependency and the use it to connect to the database with the credentiasl specified in the URL. 
 
-**Troubleshooting:** Since `"JDBC_DATABASE_URL"` is not saved to your profile, make sure is set up before running `heroku local`, this is explained in this [previous section](https://github.com/luminaxster/swe432tomcat/blob/master/README.md#configure-the-connection-to-your-remote-db-add-ons-in-heroku).
+**Troubleshooting:** You may get an error like `java.sql.SQLException: The url cannot be null`. Since `"JDBC_DATABASE_URL"` is not saved to your profile, make sure is set up before running `heroku local`, this is explained in this [previous section](https://github.com/luminaxster/swe432tomcat/blob/master/README.md#configure-the-connection-to-your-remote-db-add-ons-in-heroku).
 
 ### 5. Saving data into the database
 ```Java
@@ -372,6 +372,12 @@ After gettign a new or exisitng connection the database, executing the query ret
         out, saveStatusHTML, entriesManager.getAllAsHTMLTable());
        PrintTail(out);
  ```
+ 
+Finally, the servlet can use database persistence via the EntryManager instance to save (`save(...)`) a new entry and rendering all the entries in the database in a HTML table (`getAllAsHTMLTable()`).
+
+### Bonus: Avoiding XSS attacks
+A common way to attack (web) apps is to inject malicious code in data captured from user inputs -- Cross-Site Scripting. Since it is common to generate HTML content from user data, an attacker may add executable code that will trigger in the page. For example, adding `<script>function xss(){location.href='https://www.google.com'} </script><button onclick="xss()">click me</button>` in the name in any of the Persistence examples will succeded on adding a malicious button that takes you to `google.com` once clicked. The database fails because of the table column not accepting more than 50 characters.
+Consider using [Jsoup](https://jsoup.org/) when capturing user inputs in your services, and also when sending them back to your front-end.
 
 # Grading: sharing your repo with the TA
 Your assignment's repo must be private at all times and for me to grade your code, please add me as a contributor. My username is luminaxster.
