@@ -359,8 +359,11 @@ After gettign a new or exisitng connection the database, executing the query ret
 
 **Important:** Using only `executeQuery()` to make querys prevents some types of SQL injection attacks. Using other API methods to do so will let your server vulnerable. For instance, using `executeUpdate()` to make queries will allow attackers to delete your database tables by ending the current statement and appending a delete update `; delete from entries`.
 
-**ImportantER:**
-Always use sanitized user inputs to assemble statements, and use prepared statements when concatenating user inputs in your queries or updates. More details below.
+###ImportantER: Avoid XSS attacks
+A common way to attack (web) apps is to inject malicious code in data captured from user inputs -- Cross-Site Scripting. Since it is common to generate HTML content from user data, an attacker may add executable code that will trigger in the page. For example, adding `<script>function xss(){location.href='https://www.google.com'} </script><button onclick="xss()">click me</button>` in the name in any of the Persistence examples will succeded on adding a malicious button that takes you to `google.com` once clicked. The database fails because of the table column not accepting more than 50 characters.
+Consider using [Jsoup](https://jsoup.org/) to sanitize data when capturing user inputs in your services, and also when sending them back to your front-end. 
+
+**Always** use **sanitized** user inputs to assemble statements, and use **prepared statements** when concatenating **user inputs** in your queries or updates.
 
 ### 7. Using both it the servlet
 
@@ -378,10 +381,6 @@ Always use sanitized user inputs to assemble statements, and use prepared statem
  ```
  
 Finally, the servlet can use database persistence via the EntryManager instance to save (`save(...)`) a new entry and rendering all the entries in the database in a HTML table (`getAllAsHTMLTable()`).
-
-### Avoiding XSS attacks
-A common way to attack (web) apps is to inject malicious code in data captured from user inputs -- Cross-Site Scripting. Since it is common to generate HTML content from user data, an attacker may add executable code that will trigger in the page. For example, adding `<script>function xss(){location.href='https://www.google.com'} </script><button onclick="xss()">click me</button>` in the name in any of the Persistence examples will succeded on adding a malicious button that takes you to `google.com` once clicked. The database fails because of the table column not accepting more than 50 characters.
-Consider using [Jsoup](https://jsoup.org/) to sanitize data when capturing user inputs in your services, and also when sending them back to your front-end.
 
 # Grading: sharing your repo with the TA
 Your assignment's repo must be private at all times and for me to grade your code, please add me as a contributor. My username is luminaxster.
