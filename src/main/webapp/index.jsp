@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
   <script>
-    var servletURL = window.location.origin + "/hello";
+    var servletURL = window.location.origin;
   </script>
 <title>First JSP</title>
 </head>
@@ -13,7 +13,13 @@
 <body>
 <h2>Hello Heroku! I am JSP</h2>
 <strong>Current Time is</strong>: <%=new Date() %>
-<button onclick="window.location.assign(servletURL);"> Try the servlet </button>
-
+<p>Try a: </p>
+<button onclick="window.location.assign(servletURL+'/hello');">Simple servlet </button>
+<button onclick="window.location.assign(servletURL+'/echo');">Echo POST requests servlet </button>
+<button onclick="window.location.assign(servletURL+'/twoButtons');">Form submitting servlet </button>
+<button onclick="window.location.assign(servletURL+'/file');">File persistence servlet </button>
+<button onclick="window.location.assign(servletURL+'/json');">JSON File persistence servlet </button>
+<button onclick="window.location.assign(servletURL+'/xml');">JSON File persistence servlet </button>
+<button onclick="window.location.assign(servletURL+'/database');">Database persistence servlet </button>
 </body>
 </html>
