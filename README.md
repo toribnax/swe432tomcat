@@ -327,9 +327,10 @@ public boolean save(String name, int age){
 After getting a new or existing `connection`, preparing a statement to insert a row in table `entries`, the order of values set follow the sequence determined by the tuple `(name, age)` in the statement: `statement.setString(1, name)` is concatenated where the first question mark is in `(?, ?)` and ` statement.setInt(2, age)` to the second.
 
 Finally,  `statement.executeUpdate();` will attempt to insert the row, if no errors are thrown, it does not mean it succeded, the return value of the method is a count of the affected rows, in this context `1` should be successfully inserted one row. 
-**Important:** Prepared statements prevent some types of SQL injection attacks. Using other API methods to do so will let your server vulnerable.
 
-### 6. Queryng data from the database
+**Important:** Prepared statements prevent some types of SQL injection attacks. Using other API methods to do so will let your server vulnerable. more details in the next sections.
+
+### 6. Querying data from the database
 ```Java
 public String getAllAsHTMLTable(){
         Statement statement = null;
@@ -356,7 +357,10 @@ public String getAllAsHTMLTable(){
 ```
 After gettign a new or exisitng connection the database, executing the query returns a ResultSet, which can be iterated. In this case were building a HTML table with rows obtained from the query result.
 
-**Important:** using only `executeQuery()` to make querys prevent some types of SQL injection attacks. Using other API methods to do so will let your server vulnerable. For instance, using `executeUpdate()` to make queries. Not using sanitized user inputs to assemble statements, always use prepared statements when concatenating user inputs in your queries or updates.
+**Important:** Using only `executeQuery()` to make querys prevents some types of SQL injection attacks. Using other API methods to do so will let your server vulnerable. For instance, using `executeUpdate()` to make queries will allow attackers to delete your database tables by ending the current statement and appending a delete update `; delete from entries`.
+
+**ImportantER:**
+Always use sanitized user inputs to assemble statements, and use prepared statements when concatenating user inputs in your queries or updates. More details below.
 
 ### 7. Using both it the servlet
 
@@ -375,7 +379,7 @@ After gettign a new or exisitng connection the database, executing the query ret
  
 Finally, the servlet can use database persistence via the EntryManager instance to save (`save(...)`) a new entry and rendering all the entries in the database in a HTML table (`getAllAsHTMLTable()`).
 
-### Bonus: Avoiding XSS attacks
+### Avoiding XSS attacks
 A common way to attack (web) apps is to inject malicious code in data captured from user inputs -- Cross-Site Scripting. Since it is common to generate HTML content from user data, an attacker may add executable code that will trigger in the page. For example, adding `<script>function xss(){location.href='https://www.google.com'} </script><button onclick="xss()">click me</button>` in the name in any of the Persistence examples will succeded on adding a malicious button that takes you to `google.com` once clicked. The database fails because of the table column not accepting more than 50 characters.
 Consider using [Jsoup](https://jsoup.org/) to sanitize data when capturing user inputs in your services, and also when sending them back to your front-end.
 
