@@ -6,7 +6,7 @@ package servlet;
 //https://github.com/luminaxster/swe432tomcat#add-database-persistence-to-your-heroku-app
 
 /*
-requires Postgresql in your pom.xml
+requires Postgresql and Jsoup in your pom.xml
 <dependencies>
 ...
 
@@ -15,9 +15,17 @@ requires Postgresql in your pom.xml
   <artifactId>postgresql</artifactId>
   <version>42.2.1</version>
 </dependency>
+<dependency>
+    <groupId>org.jsoup</groupId>
+    <artifactId>jsoup</artifactId>
+    <version>1.13.1</version>
+</dependency>
+
 
 ...
 */
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -104,7 +112,7 @@ public class DatabaseServlet extends HttpServlet{
 
           while (entries.next()) {
               htmlOut.append("<tr><td>");
-              htmlOut.append(entries.getString(1)); //name
+              htmlOut.append(Jsoup.clean(entries.getString(1), Whitelist.basic())); //name
               htmlOut.append("</td><td>");
               htmlOut.append(entries.getInt(2)); //age
               htmlOut.append("</td></tr>");
@@ -142,7 +150,8 @@ public class DatabaseServlet extends HttpServlet{
   public void doPost (HttpServletRequest request, HttpServletResponse response)
      throws ServletException, IOException
   {
-     String name = request.getParameter(Data.NAME.name());
+     String name = Jsoup.clean(
+      request.getParameter(Data.NAME.name()), Whitelist.basic());
      String rawAge = request.getParameter(Data.AGE.name());
      Integer age  = null;
 
