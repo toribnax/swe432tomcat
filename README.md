@@ -327,7 +327,7 @@ public boolean save(String name, int age){
 After getting a new or existing `connection`, preparing a statement to insert a row in table `entries`, the order of values set follow the sequence determined by the tuple `(name, age)` in the statement: `statement.setString(1, name)` is concatenated where the first question mark is in `(?, ?)` and ` statement.setInt(2, age)` to the second.
 
 Finally,  `statement.executeUpdate();` will attempt to insert the row, if no errors are thrown, it does not mean it succeded, the return value of the method is a count of the affected rows, in this context `1` should be successfully inserted one row. 
-**Important:** Prepared statements prevent SQL injection attacks. Using other API methods to do so will let your server vulnerable.
+**Important:** Prepared statements prevent some types of SQL injection attacks. Using other API methods to do so will let your server vulnerable.
 
 ### 6. Queryng data from the database
 ```Java
@@ -356,7 +356,7 @@ public String getAllAsHTMLTable(){
 ```
 After gettign a new or exisitng connection the database, executing the query returns a ResultSet, which can be iterated. In this case were building a HTML table with rows obtained from the query result.
 
-**Important:** using only executeQuery() to make querys prevent SQL injection attacks. Using other API methods to do so will let your server vulnerable.
+**Important:** using only `executeQuery()` to make querys prevent some types of SQL injection attacks. Using other API methods to do so will let your server vulnerable. For instance, using `executeUpdate()` to make queries. Not using sanitized user inputs to assemble statements, always use prepared statements when concatenating user inputs in your queries or updates.
 
 ### 7. Using both it the servlet
 
@@ -377,7 +377,7 @@ Finally, the servlet can use database persistence via the EntryManager instance 
 
 ### Bonus: Avoiding XSS attacks
 A common way to attack (web) apps is to inject malicious code in data captured from user inputs -- Cross-Site Scripting. Since it is common to generate HTML content from user data, an attacker may add executable code that will trigger in the page. For example, adding `<script>function xss(){location.href='https://www.google.com'} </script><button onclick="xss()">click me</button>` in the name in any of the Persistence examples will succeded on adding a malicious button that takes you to `google.com` once clicked. The database fails because of the table column not accepting more than 50 characters.
-Consider using [Jsoup](https://jsoup.org/) when capturing user inputs in your services, and also when sending them back to your front-end.
+Consider using [Jsoup](https://jsoup.org/) to sanitize data when capturing user inputs in your services, and also when sending them back to your front-end.
 
 # Grading: sharing your repo with the TA
 Your assignment's repo must be private at all times and for me to grade your code, please add me as a contributor. My username is luminaxster.
