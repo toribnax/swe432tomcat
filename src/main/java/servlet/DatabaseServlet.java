@@ -2,6 +2,8 @@ package servlet;
 // Written by David Gonzalez, April 2020
 // Modified by Jeff Offutt
 // Built to deploy in github with Heroku
+// IF STUCK, READ THE TUTORIAL:
+//https://github.com/luminaxster/swe432tomcat#add-database-persistence-to-your-heroku-app
 
 /*
 requires Postgresql in your pom.xml
