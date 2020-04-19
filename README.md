@@ -230,7 +230,7 @@ heroku pg:psql <your_postgresql_add_on_name> --app <your_heroku_app_name>
 ```
 **Remember:** `<your_heroku_app_name>` is the name of your heroku app, and `<your_postgresql_add_on_name>` is your postgres add-on name.
 
-You can get your precise command from your Postgres add-on dashboard, go to settings > admistration > view credentials > **Heroku cli**
+You can get your precise command by goinf to the Heroku web page, and once in your account, go to the add-ons dashboard, select the Postgres add-on created some steps before. Then go to settings > admistration > view credentials > **Heroku cli**
 
 Once that command executes correctly, you should be now using the database CLI, in your shell, the input should look like this:
 ```ShellSession
