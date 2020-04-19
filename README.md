@@ -216,7 +216,7 @@ export JDBC_DATABASE_URL=`heroku run echo \\$JDBC_DATABASE_URL -a <your_heroku_a
 **Remember:** `<your_heroku_app_name>` is the name of your heroku app.
 
 Double check the environment variable was set:
-```
+```ShellSession
 echo $JDBC_DATABASE_URL
 ```
 It should return a string like `jdbc:postgresql://...`.
