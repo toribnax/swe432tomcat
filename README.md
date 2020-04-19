@@ -196,7 +196,7 @@ You can get Postgres [here](https://postgresapp.com/downloads.html) and choose y
 *Windows:* Using the wizard will install the DB, services and basic tools we need to manage and query the database.
 
 
-*Mac:* Select Postgres.app with PostgreSQL 12. Then execute this command in your terminal:
+*MacOS:* Select Postgres.app with PostgreSQL 12, and install it. Then execute this command in your terminal:
 ```ShellSession
 sudo mkdir -p /etc/paths.d &&
 echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
