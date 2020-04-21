@@ -9,11 +9,11 @@ import java.io.*;
 import java.util.Date;
 import javax.servlet.annotation.WebServlet;
 
-@WebServlet(name = "session", urlPatterns = {"/sessionLifeCycle"})
+@WebServlet(name = "session", urlPatterns = {"/session"})
 public class SessionLifeCycle extends HttpServlet
 {
  // The link will have a parameter builtin
-      String lifeCycleURL = "/sessionLifeCycle";
+      String lifeCycleURL = "/session";
 public void doGet (HttpServletRequest request, HttpServletResponse response)
        throws ServletException, IOException
 {
