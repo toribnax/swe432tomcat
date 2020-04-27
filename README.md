@@ -211,7 +211,7 @@ It should return a file system path like `/Applications/Postgres.app/Contents/Ve
 ## Configure the connection to your remote DB add-ons in Heroku
 In order for your Java applications to access the DB via JDBC, you need to setup the connection. In your terminal, execute:
 ```ShellSession
-export JDBC_DATABASE_URL=`heroku run echo \\$JDBC_DATABASE_URL -a <your_heroku_app_name>
+export JDBC_DATABASE_URL=`heroku run echo \\$JDBC_DATABASE_URL -a <your_heroku_app_name>`
 ```
 
 If you running the commands on *Windows*, try running the commands separately: `heroku run echo \$JDBC_DATABASE_URL -a <your_heroku_app_name>`. Then copy the URL echoed by the previous command, and set it to your environment: `setx JDBC_DATABASE_URL "URL..."`, or create a JDBC_DATABASE_URL property in the system's environment variables with that URL.
