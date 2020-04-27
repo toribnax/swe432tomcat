@@ -214,7 +214,8 @@ In order for your Java applications to access the DB via JDBC, you need to setup
 export JDBC_DATABASE_URL=`heroku run echo \\$JDBC_DATABASE_URL -a <your_heroku_app_name>
 ```
 **Remember:** `<your_heroku_app_name>` is the name of your heroku app.
-
+If you running the commands on Windows, 
+Try running the commands separately: heroku run echo \$JDBC_DATABASE_URL -a swe432-spring2020 . Then copy that URL and set it to your environment: export JDBC_DATABASE_URL=URL...
 Double check the environment variable was set:
 ```ShellSession
 echo $JDBC_DATABASE_URL
