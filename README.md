@@ -125,7 +125,7 @@ export PATH=/opt/apache-maven-3.6.3/bin:$PATH
 ```
 The line above assumes Maven's path is `/opt/apache-maven-3.6.3/bin`, or that your Maven download has been moved there. You can use a different path too, make sure your path is reflected in this line.
 
-For Windows machines, add Maven's path to the PATH property in the system's environment variables.
+For *Windows* machines, add Maven's path to the PATH property in the system's environment variables.
 
 **Note:** Reopen your terminal for the changes to be reflected.
 
@@ -214,7 +214,7 @@ In order for your Java applications to access the DB via JDBC, you need to setup
 export JDBC_DATABASE_URL=`heroku run echo \\$JDBC_DATABASE_URL -a <your_heroku_app_name>
 ```
 
-If you running the commands on *Windows*, try running the commands separately: `heroku run echo \$JDBC_DATABASE_URL -a <your_heroku_app_name>`. Then copy the URL echoed by the previous command, and set it to your environment: `setx JDBC_DATABASE_URL "URL..."`.
+If you running the commands on *Windows*, try running the commands separately: `heroku run echo \$JDBC_DATABASE_URL -a <your_heroku_app_name>`. Then copy the URL echoed by the previous command, and set it to your environment: `setx JDBC_DATABASE_URL "URL..."`, or create a JDBC_DATABASE_URL property in the system's environment variables with that URL.
 
 **Remember:** `<your_heroku_app_name>` is the name of your heroku app.
 
