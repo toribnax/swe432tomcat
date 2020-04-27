@@ -213,13 +213,20 @@ In order for your Java applications to access the DB via JDBC, you need to setup
 ```ShellSession
 export JDBC_DATABASE_URL=`heroku run echo \\$JDBC_DATABASE_URL -a <your_heroku_app_name>
 ```
+
+If you running the commands on *Windows*, try running the commands separately: `heroku run echo \$JDBC_DATABASE_URL -a <your_heroku_app_name>`. Then copy the URL echoed by the previous command, and set it to your environment: `setx JDBC_DATABASE_URL "URL..."`.
+
 **Remember:** `<your_heroku_app_name>` is the name of your heroku app.
-If you running the commands on Windows, 
-Try running the commands separately: heroku run echo \$JDBC_DATABASE_URL -a swe432-spring2020 . Then copy that URL and set it to your environment: export JDBC_DATABASE_URL=URL...
+
 Double check the environment variable was set:
 ```ShellSession
 echo $JDBC_DATABASE_URL
 ```
+For *Windows*, try this instead:
+```ShellSession
+echo %JDBC_DATABASE_URL%
+```
+
 It should return a string like `jdbc:postgresql://...`.
 
 **Note:** This configuration will be lost once you close the terminal, do no try to make it permanent, the crendentials are renovated often.
@@ -366,7 +373,7 @@ Consider using [Jsoup](https://jsoup.org/) to sanitize data when capturing user 
 
 **Always** use **sanitized** user inputs to assemble statements, and use **prepared statements** when concatenating **user inputs** in your queries or updates.
 
-### 7. Using both it the servlet
+### 7. Saving an entry in and getting all entries from the database in the servlet
 
 ```Java
 ... doPost(...
