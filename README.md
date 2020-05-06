@@ -398,7 +398,7 @@ For more details about how to create a Tomcat setup from scratch, go to the Dev 
 
 ## Resources: 
 
-[Git](https://kbroman.org/github_tutorial/pages/init.html)
+[Git Tutorial](https://kbroman.org/github_tutorial/pages/init.html)
 
 [Heroku Postgres](https://devcenter.heroku.com/articles/heroku-postgresql)
 
