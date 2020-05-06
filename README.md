@@ -3,7 +3,7 @@
 This tutorial will show you how to deploy and develop a Heroku app that runs servlets and JSPs.
 There are two activities covered in this tutorial: deployment will cover how to obtain a remote repository, making a copy of it in your own repository, persisting changes from your local instance to your remote one in GitHub and automatically deploy your app in Heroku, and development will cover how to build and run your app locally.
 
-Check the currently deployed version: https://swe432tomcat.herokuapp.com
+Check the currently deployed version: <https://swe432tomcat.herokuapp.com>
 
 ## Prelude
 We are working with two different phases of the software lifecycle: **development**(programming, debugging, program testing) and **deployment**(publishing your app in your servers so clients can use it).  Heroku offers a hosting service for your web app and can be linked with GitHub to auto-deploy it, and also offers development tools so you can run your app locally.
