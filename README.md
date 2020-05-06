@@ -3,7 +3,7 @@
 This tutorial will show you how to deploy and develop a Heroku app that runs servlets and JSPs.
 There are two activities covered in this tutorial: deployment will cover how to obtain a remote repository, making a copy of it in your own repository, persisting changes from your local instance to your remote one in GitHub and automatically deploy your app in Heroku, and development will cover how to build and run your app locally.
 
-Check the currently deployed version: <https://swe432tomcat.herokuapp.com>
+Check the currently deployed version: [https://swe432tomcat.herokuapp.com](https://swe432tomcat.herokuapp.com).
 
 ## Prelude
 We are working with two different phases of the software lifecycle: **development**(programming, debugging, program testing) and **deployment**(publishing your app in your servers so clients can use it).  Heroku offers a hosting service for your web app and can be linked with GitHub to auto-deploy it, and also offers development tools so you can run your app locally.
@@ -29,17 +29,17 @@ You can create accounts for free in both platforms (do not provide any payment i
 
 ### GitHub
 
-Go to https://github.com/join and create your account.
+Go to [Github](https://github.com/) and create your account.
 
 ### Heroku
 
-Go to https://signup.heroku.com to create your account.
+Go to [Heroku](https://signup.heroku.com) to create your account.
 
-Optional: You can use the GitHub student package found at https://www.heroku.com/github-students. 
+Optional: You can use the GitHub student package found (here)[https://www.heroku.com/github-students]. 
 
 ## Deployment: Create a Git repo(sitory) and and link it to a Heroku app 
 
-If you have not installed Git before, you can get it here: https://git-scm.com/downloads.
+If you have not installed Git before, you can get it [here](https://git-scm.com/downloads).
 
 Now, follow these steps to bring this repo into your Github account:
 
@@ -83,7 +83,7 @@ git push
 Remember to be explicit with your commit messages, this will document the rationale of your code changes and be seen in each file history by everyone wanting to contribute to your project, or even you after a month not looking at the file.
 ### 4. Create a Heroku app
 
-Go to https://dashboard.heroku.com/apps: click on "New" > "Create New App", provide a name, and click on "create app".
+Go to your [Heroku dashboard](https://dashboard.heroku.com/apps): click on "New" > "Create New App", provide a name, and click on "create app".
 
 ### 5. Link repo and deploy 
 
@@ -113,7 +113,7 @@ Before deploying your app in the Web, you normally program, debug and test your 
 
 #### Apache Maven installation
 
-If you have not installed Apache Maven before, you can get the binaries here: https://maven.apache.org/download.cgi, and follow the instructions here: https://maven.apache.org/install.html.
+If you have not installed Apache Maven before, you can get the binaries [here](https://maven.apache.org/download.cgi), and follow the instructions [here](https://maven.apache.org/install.html).
 
 Note: if you are using a *Unix-like* system (e.g MacOS, Linux), you need to open a terminal and add the path to Maven permanently in your bash profile:
 ```ShellSession
@@ -130,7 +130,7 @@ For *Windows* machines, add Maven's path to the PATH property in the system's en
 **Note:** Reopen your terminal for the changes to be reflected.
 
 #### Heroku CLI installation
-If you have not installed the Heroku CLI  before, you can get it here: https://devcenter.heroku.com/articles/heroku-cli.
+If you have not installed the Heroku CLI  before, you can get it [here](https://devcenter.heroku.com/articles/heroku-cli).
 
 For Windows machines, this repo's [Procfile](https://github.com/luminaxster/swe432tomcat/blob/master/Procfile) is set up for Unix-like machines, "sh" is the shell command in Unix . In Windows, replace the following line in the Procfile:
 ```ShellSession
@@ -255,7 +255,7 @@ This project has an [example](https://github.com/luminaxster/swe432tomcat/blob/m
 
 Follow the next sections to follow how the Database Servlet was implemented. 
 ### 1. Manage and query your database
-In your database CLI (the same accessed in [a previous section](blah)), create the folowing table, it is required by the [DB servlet](https://github.com/luminaxster/swe432tomcat/blob/master/src/main/java/servlet/DatabaseServlet.java) to work:
+In your database CLI (the same accessed in [a previous section](#connect-to-you-database-via-cli), create the folowing table, it is required by the [DB servlet](https://github.com/luminaxster/swe432tomcat/blob/master/src/main/java/servlet/DatabaseServlet.java) to work:
 
 ```SQL
 CREATE TABLE entries( 
@@ -398,15 +398,13 @@ For more details about how to create a Tomcat setup from scratch, go to the Dev 
 
 ## Resources: 
 
-https://kbroman.org/github_tutorial/pages/init.html 
+[Git](https://kbroman.org/github_tutorial/pages/init.html)
 
-https://devcenter.heroku.com/articles/heroku-postgresql
+[Heroku Postgres](https://devcenter.heroku.com/articles/heroku-postgresql)
 
-https://devcenter.heroku.com/articles/heroku-postgresql#local-setup
+[Heroku Dataclips](https://devcenter.heroku.com/articles/dataclips)
 
-https://devcenter.heroku.com/articles/dataclips
-
-https://www.vogella.com/tutorials/JavaXML/article.html
+[Java XML writing and reading](https://www.vogella.com/tutorials/JavaXML/article.html)
 
 
 
