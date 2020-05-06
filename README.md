@@ -35,7 +35,7 @@ Go to [Github](https://github.com/) and create your account.
 
 Go to [Heroku](https://signup.heroku.com) to create your account.
 
-Optional: You can use the GitHub student package found (here)[https://www.heroku.com/github-students]. 
+Optional: You can use the GitHub student package found [here](https://www.heroku.com/github-students). 
 
 ## Deployment: Create a Git repo(sitory) and and link it to a Heroku app 
 
